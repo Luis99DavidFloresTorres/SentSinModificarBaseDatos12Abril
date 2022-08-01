@@ -8,6 +8,7 @@ import com.example.springprueba.model.ordencompra;
 import com.example.springprueba.repo.RepoItemnotaventa;
 import com.example.springprueba.repo.RepoNotaVenta;
 import com.example.springprueba.responsesJson.LoginResponse;
+import com.example.springprueba.service.ServiceItemVenta;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,11 +31,13 @@ import java.util.Optional;
 public class ControllerItemnotaventa {
     private RepoNotaVenta repoNotaVenta;
     private RepoItemnotaventa repoItemnotaventa;
+    private ServiceItemVenta serviceItemVenta;
     private Imprimir imprimir;
-    public ControllerItemnotaventa(RepoNotaVenta repoNotaVenta, RepoItemnotaventa repoItemnotaventa, Imprimir imprimir){
+    public ControllerItemnotaventa(RepoNotaVenta repoNotaVenta, RepoItemnotaventa repoItemnotaventa, Imprimir imprimir, ServiceItemVenta serviceItemVenta){
         this.repoNotaVenta = repoNotaVenta;
         this.repoItemnotaventa =repoItemnotaventa;
         this.imprimir = imprimir;
+        this.serviceItemVenta = serviceItemVenta;
     }
     @PostMapping("/add")
     public ResponseEntity<LoginResponse> agregar(@RequestBody List<itemnotaventa> itemnotaventaList){
@@ -55,12 +59,13 @@ public class ControllerItemnotaventa {
         loginResponse.setRespuesta("exito");
         return new ResponseEntity<>(loginResponse, HttpStatus.OK);
     }
-    @GetMapping("/byNotaventa/{id}")
+    /*@GetMapping("/byNotaventa/{id}")
     public ResponseEntity<List<itemnotaventa>> findByNotaventa(@PathVariable("id") Long id){
+        System.out.println(id);
         Optional<notaventa> notaventa = repoNotaVenta.findById(id);
         List<itemnotaventa> itemnotaventaList = repoItemnotaventa.findByNotaventa(notaventa.get());
         return new ResponseEntity<>(itemnotaventaList, HttpStatus.OK);
-    }
+    }*/
     @GetMapping("/imprimir/{nrodoc}")
     public ResponseEntity<InputStreamResource> buildExcelDocument(@PathVariable("nrodoc") Integer nrodoc) throws Exception {
         System.out.println("entra");
@@ -68,6 +73,12 @@ public class ControllerItemnotaventa {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add("Content-Disposition","attachment; filename=\"notaventa.xlsx\"");
         return  ResponseEntity.ok().headers(httpHeaders).body(new InputStreamResource(byteCliente));
+    }
+    @GetMapping("/fechasP/{fecha1}/{fecha2}/{nombreP}")
+    public ResponseEntity<List<itemnotaventa>> entreFechasProducto(@PathVariable("fecha1") Date fecha1, @PathVariable("fecha2") Date fecha2, @PathVariable("nombreP") String nombreP) throws Exception {
+        System.out.println(nombreP);
+       List<itemnotaventa> itemventa = serviceItemVenta.entreFechas(fecha1,fecha2,nombreP);
+       return new ResponseEntity<>(itemventa,HttpStatus.OK);
     }
    /* public ByteArrayInputStream exportAllData(Integer idNotaVenta) throws Exception {
         String[] columns = {"CODIGO", "DESCRIPCION", "UNIDAD","CANTIDAD","PRECIO UNITARIO","TOTAL"};
@@ -99,4 +110,8 @@ public class ControllerItemnotaventa {
         workbook.close();
         return new ByteArrayInputStream(stream.toByteArray());
     }*/
+   @GetMapping("/prueba")
+   public ResponseEntity<List<itemnotaventa>> pr(){
+       return new ResponseEntity(this.repoItemnotaventa.findAll(), HttpStatus.OK);
+   }
 }

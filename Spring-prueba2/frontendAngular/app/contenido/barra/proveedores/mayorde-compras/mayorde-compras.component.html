@@ -32,7 +32,7 @@
   </mat-form-field>
   <button mat-icon-button (click)="buscarProveedores()"><mat-icon>search</mat-icon></button>
 </form >
-<div  *ngIf="activar">
+<div  >
   <div fxLayoutAlign="center center">
     <mat-form-field  color= "primary" fxFlex="30%">
       <input matInput id="input" placeholder="buscador" (keyup)="hacerFiltro($any($event.target).value)">
@@ -41,7 +41,7 @@
     </mat-form-field>
   </div>
   <div>
-    <mat-table [dataSource]="dataSource" class="mat-elevation-z8" matSort>
+    <mat-table [dataSource]="dataSource" class="mat-elevation-z8" matSort >
       <ng-container matColumnDef="id" >
         <mat-header-cell  *matHeaderCellDef mat-sort-header>Id</mat-header-cell>
         <mat-cell *matCellDef="let element">  {{element.id}} </mat-cell>
@@ -49,6 +49,10 @@
       <ng-container matColumnDef="transproducto.factura">
         <mat-header-cell  *matHeaderCellDef mat-sort-header>Factura</mat-header-cell>
         <mat-cell *matCellDef="let element">  {{element.transproducto.factura}} </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="transproducto.notaventa">
+        <mat-header-cell  *matHeaderCellDef mat-sort-header>Factura</mat-header-cell>
+        <mat-cell *matCellDef="let element">  {{element.transproducto.notaventa}} </mat-cell>
       </ng-container>
       <ng-container matColumnDef="transproducto.nrodoc">
         <mat-header-cell  *matHeaderCellDef mat-sort-header>Nro documento</mat-header-cell>
@@ -80,3 +84,7 @@
     </mat-table>
   </div>
 </div>
+<mat-form-field fxLayoutAlign="end">
+  <mat-label>Total</mat-label>
+  <input matInput [formControl]="totalSuma">
+</mat-form-field>

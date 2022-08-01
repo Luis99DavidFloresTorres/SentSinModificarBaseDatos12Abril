@@ -12,6 +12,8 @@ export class ServiceItemCompra{
   baseUrl = environment.baseUrl;
   subjectItemCompraGuardar = new Subject<LoginModel>();
   subjectByOrdenCompra = new Subject<ModelItemOrdenCompra[]>();
+  subjectFechasProducto = new Subject<ModelItemOrdenCompra[]>();
+  itemsOrdenCompra = new Subject<ModelItemOrdenCompra[]>();
   constructor(private http:HttpClient){
   }
   agregarItemOrdenCompra(producto:ModelItemOrdenCompra[]){
@@ -49,11 +51,30 @@ export class ServiceItemCompra{
       this.subjectByOrdenCompra.next(items);
     })
   }
+  fechasProducto(fecha1:Date,fecha2:Date,nombre:String){
+    this.http.get<ModelItemOrdenCompra[]>(this.baseUrl+'api/itemCompra/fechasP/'+fecha1+'/'+fecha2+"/"+nombre).subscribe(data=>{
+      var items:ModelItemOrdenCompra[] = data;
+      console.log(data);
+      this.subjectFechasProducto.next(items);
+    })
+  }
+  findByNotaventa(id:Number){
+    this.http.get<ModelItemOrdenCompra[]>(this.baseUrl+'api/itemCompra/byOrdenCompra/'+id).subscribe(data=>{
+       var items:ModelItemOrdenCompra[] = data;
+       this.itemsOrdenCompra.next(items);
+     })
+
+   }
   listenerSubjectItemAgregado(){
     return this.subjectItemCompraGuardar.asObservable();
   }
   listenerByOrdenCompra(){
     return this.subjectByOrdenCompra.asObservable();
   }
-
+  listenerFechasProducto(){
+    return this.subjectFechasProducto.asObservable();
+  }
+  listenerItemsVentaByNotaventa(){
+    return this.itemsOrdenCompra.asObservable();
+  }
 }

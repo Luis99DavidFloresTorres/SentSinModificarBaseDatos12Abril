@@ -20,7 +20,7 @@ import { EliminarComponent } from './eliminar.component';
 })
 export class GestionProductoComponent implements OnInit, OnDestroy {
   @HostBinding('class') componentCssClass: any;
-  displayedColumns = ['codigo','nombre','imagen','enlace'];
+  displayedColumns = ['codigo','nombre','marca','imagen','enlace'];
   dataSource= new MatTableDataSource<ProductoModel>();
   formCheckboxGroup : FormGroup|any;
   fechas: boolean=true;
@@ -58,6 +58,7 @@ export class GestionProductoComponent implements OnInit, OnDestroy {
       this.dataSource.paginator = this.pag;
     })
     this.sujetoSubscripcion =this.serviceProducto.listenerDatosProducto().subscribe((datos)=>{
+
       this.dataSource.data = datos;
       this.dataSource.paginator = this.pag;
     });
@@ -114,6 +115,28 @@ export class GestionProductoComponent implements OnInit, OnDestroy {
   }
   hacerFiltro(filtro: string){
     this.dataSource.filter = filtro;
+    this.dataSource.filterPredicate = (data, filter: string)  => {
+      const accumulator = (currentTerm:any, key:any) => {
+        return this.nestedFilterCheck(currentTerm, data, key);
+      };
+      const dataStr = Object.keys(data).reduce(accumulator, '').toLowerCase();
+      // Transform the filter by converting it to lowercase and removing whitespace.
+      const transformedFilter = filter.trim().toLowerCase();
+      return dataStr.indexOf(transformedFilter) !== -1;
+    };
+  }
+
+  nestedFilterCheck(search:any, data:any, key:any) {
+    if (typeof data[key] === 'object') {
+      for (const k in data[key]) {
+        if (data[key][k] !== null) {
+          search = this.nestedFilterCheck(search, data[key], k);
+        }
+      }
+    } else {
+      search += data[key];
+    }
+    return search;
   }
   abrirDialog(){
     this.dialog.open(InsertWithStepperComponent,{width:'700px',height:'800px', data:{boton: "agregar"}});

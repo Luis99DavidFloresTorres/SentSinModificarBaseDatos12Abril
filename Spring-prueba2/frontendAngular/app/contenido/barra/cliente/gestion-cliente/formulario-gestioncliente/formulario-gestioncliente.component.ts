@@ -18,12 +18,17 @@ import { BuscarClientesComponent } from '../../buscar-clientes/buscar-clientes.c
 export class FormularioGestionclienteComponent implements OnInit, OnDestroy{
   ciudades:String[] = []
   zonas:String[] = []
+  descuentos:String[]=[]
   index = 0;
   clienteAll:ModelCliente[]=[]
   subscriptionClienteEncontrado:Subscription|any;
   formGroup:FormGroup|any;
   subscriptionZona:Subscription|any;
   subscriptionDeposito:Subscription|any;
+  useract:String = "";
+  fechaact:String ="";
+  tiposcliente:String[] = []
+
   subscribeAllCliente:Subscription|any;
   constructor(private formBuilder:FormBuilder, private dialog:MatDialog, private serviceCliente:ServiceCliente, private serviceZona:ServiceZona, private serviceCiudad:ServiceCiudad, private dateAdapter: DateAdapter<any>) { }
   ngOnDestroy(): void {
@@ -31,7 +36,7 @@ export class FormularioGestionclienteComponent implements OnInit, OnDestroy{
   }
   ngOnInit(): void {
 
-      this.dateAdapter.setLocale('es');
+    this.dateAdapter.setLocale('es');
     this.formGroup = this.formBuilder.group({
       codigoF:[''],
       direccionF:[''],
@@ -39,14 +44,26 @@ export class FormularioGestionclienteComponent implements OnInit, OnDestroy{
       ciudadF:[''],
       zonaF:[''],
       fechaF:[''],
-      nombreClienteF:['']
+      nombreClienteF:[''],
+      desctoF:[''],
+      tipoclienteF:['']
     })
     this.desubscribir();
     this.serviceCliente.allClientes();
     this.subscribeAllCliente = this.serviceCliente.listenerAllClientes().subscribe(data=>{
+      var listatiposcliente:String[]=[]
+      data.forEach(d=>{
+          if(d.tipocliente!=undefined){
+            listatiposcliente.push(d.tipocliente.nombre);
+          }
+
+      })
       var vectorCliente:ModelCliente[]=[]
-      data.forEach(cliente=>{vectorCliente.push(cliente)})
+      var vectorDescto : String[]=[]
+      data.forEach(cliente=>{vectorCliente.push(cliente); vectorDescto.push(cliente.tipodescto)})
       this.clienteAll = vectorCliente;
+      this.descuentos = [...new Set(vectorDescto)];
+      this.tiposcliente = [...new Set(listatiposcliente)];
       this.cambiarValoresFormulario();
     })
     this.serviceZona.obtenerZonas();
@@ -56,6 +73,15 @@ export class FormularioGestionclienteComponent implements OnInit, OnDestroy{
       this.zonas = vectorZona;
     })
     this.subscriptionClienteEncontrado = this.serviceCliente.listenerEncontrarGestionCliente().subscribe(datos=>{
+      console.log(datos);
+      var fecha:Date = new Date(this.clienteAll[this.index].fechaact);
+      var fechaString:String = this.clienteAll[this.index].fechaact.toString()
+      fecha.setDate(parseInt(fechaString.split("-")[2]));
+      var tipocliente:String = ""
+      if(datos.tipocliente!=undefined){
+
+          tipocliente = datos.tipocliente.nombre;
+      }
       if(datos.zona!=undefined){
         this.formGroup.patchValue({
           nombreClienteF:datos.nombre,
@@ -63,9 +89,10 @@ export class FormularioGestionclienteComponent implements OnInit, OnDestroy{
           direccionF:datos.direccion,
           telefonoF:datos.telefono,
           ciudadF:datos.ciudad.nombre,
-          fechaF:datos.fechaact,
+          fechaF:fecha,
           zonaF:datos.zona.nombre,
-
+          desctoF:datos.tipodescto,
+          tipoclienteF:tipocliente
         })
       }else{
         this.formGroup.patchValue({
@@ -73,10 +100,15 @@ export class FormularioGestionclienteComponent implements OnInit, OnDestroy{
           codigoF:datos.codigo,
           direccionF:datos.direccion,
           telefonoF:datos.telefono,
-          ciudadF:datos.nombre,
-          fechaF:datos.fechaact,
+          ciudadF:datos.ciudad.nombre,
+          fechaF:fecha,
+          desctoF:datos.tipodescto,
+          tipoclienteF:tipocliente
         })
       }
+      var fechaString:String = this.clienteAll[this.index].fechaact.toString()
+      this.fechaact = fechaString;
+      this.useract = this.clienteAll[this.index].useract;
       this.index = this.clienteAll.findIndex(data=> data==datos);
     })
     this.serviceCiudad.obtenerCiudades();
@@ -106,6 +138,10 @@ export class FormularioGestionclienteComponent implements OnInit, OnDestroy{
   }
   zonaS(nombre:any){
   }
+  desctoS(nombre:any){
+
+  }
+
   buscarCiudades(){
 
   }
@@ -136,26 +172,80 @@ export class FormularioGestionclienteComponent implements OnInit, OnDestroy{
     this.cambiarValoresFormulario();
   }
   cambiarValoresFormulario(){
+    console.log(this.clienteAll[this.index]);
+    var fecha:Date = new Date(this.clienteAll[this.index].fechaact);
+    var fechaString:String = this.clienteAll[this.index].fechaact.toString()
+    fecha.setDate(parseInt(fechaString.split("-")[2]));
+    this.vaciarFormulario();
+    var tipocliente:String="";
+    if(this.clienteAll[this.index].tipocliente!=undefined){
 
-    if(this.clienteAll[this.index].zona!=undefined){
+      tipocliente = this.clienteAll[this.index].tipocliente.nombre;
+  }
+    if(this.clienteAll[this.index].zona!=undefined && this.clienteAll[this.index].ciudad!=undefined){
       this.formGroup.patchValue({
         nombreClienteF:this.clienteAll[this.index].nombre,
         codigoF:this.clienteAll[this.index].codigo,
         direccionF:this.clienteAll[this.index].direccion,
         telefonoF:this.clienteAll[this.index].telefono,
         ciudadF:this.clienteAll[this.index].ciudad.nombre,
-        fechaF:this.clienteAll[this.index].fechaact,
+        fechaF:fecha,
+        desctoF:this.clienteAll[this.index].tipodescto,
         zonaF:this.clienteAll[this.index].zona.nombre,
+        tipoclienteF:tipocliente
       })
-    }else{
+    }else if(this.clienteAll[this.index].ciudad!=undefined && this.clienteAll[this.index].zona==undefined){
       this.formGroup.patchValue({
         nombreClienteF:this.clienteAll[this.index].nombre,
         codigoF:this.clienteAll[this.index].codigo,
         direccionF:this.clienteAll[this.index].direccion,
         telefonoF:this.clienteAll[this.index].telefono,
         ciudadF:this.clienteAll[this.index].ciudad.nombre,
-        fechaF:this.clienteAll[this.index].fechaact,
+        desctoF:this.clienteAll[this.index].tipodescto,
+        fechaF:fecha,
+        tipoclienteF:tipocliente
+      })
+    }else if(this.clienteAll[this.index].ciudad==undefined && this.clienteAll[this.index].zona!=undefined){
+      this.formGroup.patchValue({
+        nombreClienteF:this.clienteAll[this.index].nombre,
+        codigoF:this.clienteAll[this.index].codigo,
+        direccionF:this.clienteAll[this.index].direccion,
+        telefonoF:this.clienteAll[this.index].telefono,
+        zonaF:this.clienteAll[this.index].zona.nombre,
+        desctoF:this.clienteAll[this.index].tipodescto,
+        fechaF:fecha,
+        tipoclienteF:tipocliente
+      })
+    }else if(this.clienteAll[this.index].ciudad==undefined && this.clienteAll[this.index].zona==undefined){
+      this.formGroup.patchValue({
+        nombreClienteF:this.clienteAll[this.index].nombre,
+        codigoF:this.clienteAll[this.index].codigo,
+        direccionF:this.clienteAll[this.index].direccion,
+        telefonoF:this.clienteAll[this.index].telefono,
+        desctoF:this.clienteAll[this.index].tipodescto,
+        fechaF:fecha,
+        tipoclienteF:tipocliente
       })
     }
+    var fechaString:String = this.clienteAll[this.index].fechaact.toString()
+    this.fechaact = fechaString;
+    this.useract = this.clienteAll[this.index].useract;
+  }
+  vaciarFormulario(){
+    this.fechaact = "";
+    this.useract = "";
+    this.formGroup.patchValue({
+      nombreClienteF:"",
+      codigoF:"",
+      direccionF:"",
+      telefonoF:null,
+      zonaF:null,
+      fechaF:null,
+      desctoF:null,
+      ciudadF:null
+    })
+  }
+  tipoclienteS(nombres:String){
+
   }
 }

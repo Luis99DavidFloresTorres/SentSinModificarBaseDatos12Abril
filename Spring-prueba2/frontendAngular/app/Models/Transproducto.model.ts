@@ -16,5 +16,6 @@ export interface ModelTransproducto{
   clienteNombre:String;
   proyecto:ModelCotizacionProyecto;
   proveedorNombre:String;
+  factura:Number;
   proyectoNombre:String;
 }

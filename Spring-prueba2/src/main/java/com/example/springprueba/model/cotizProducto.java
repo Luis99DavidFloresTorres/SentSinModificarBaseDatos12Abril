@@ -18,10 +18,12 @@ public class cotizProducto {
     private String detalle;
     private Integer oper;
     private String contactopre;
+    private String useract;
     @ManyToOne
     @JoinColumn(name="proveedor_id")
     private proveedor proveedor;
     @ManyToOne
     @JoinColumn(name="proyecto_id")
     private proyecto proyecto;
+
 }

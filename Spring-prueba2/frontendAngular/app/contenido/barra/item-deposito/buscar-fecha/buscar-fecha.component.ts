@@ -37,7 +37,9 @@ export class BuscarFechaComponent implements OnInit {
 
   };
   ngOnDestroy(): void {
-
+    if(this.depositoSubscribe!=undefined){
+      this.depositoSubscribe.unsubscribe();
+    }
   }
   buscarFecha(){
     var ano =this.formG.value.fechaBuscar.getFullYear();

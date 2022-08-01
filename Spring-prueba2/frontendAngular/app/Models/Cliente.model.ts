@@ -1,4 +1,5 @@
 import { CiudadesModel } from "../contenido/barra/codificador/ciudades/ciudades.model";
+import { tipoClienteModel } from "../contenido/barra/codificador/tipos-cliente/tiposCliente.model";
 import { ZonaModel } from "../contenido/barra/codificador/zonas/zona.model";
 
 export interface ModelCliente{
@@ -11,6 +12,8 @@ export interface ModelCliente{
   ciudad:CiudadesModel;
   zona:ZonaModel;
   fechaact:Date;
+  useract:String;
+  tipocliente:tipoClienteModel;
 }
 export interface exportarDescuento{
   guardar:boolean;

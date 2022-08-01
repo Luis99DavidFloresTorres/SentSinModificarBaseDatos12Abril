@@ -25,7 +25,7 @@ export class ServiceUsuario{
 
       'Content-Type': 'application/json'
     })
-    var usuario: UsuarioModel={cuenta:cuenta, contrasena:contrasena};
+    var usuario: UsuarioModel|any={cuenta:cuenta, contrasena:contrasena};
     this.http.post<LoginModel>(this.baseUrl+'api/usuario/login', usuario)
     .subscribe((data)=>{
       console.log(data);
@@ -92,7 +92,7 @@ export class ServiceUsuario{
 
       'Content-Type': 'application/json'
     })
-    var usuario: UsuarioModel={cuenta:cuenta, contrasena:contrasena};
+    var usuario: UsuarioModel|any={cuenta:cuenta, contrasena:contrasena};
     this.http.post<DerechosModel>(this.baseUrl+'api/usuario/buscarSubNivel',usuario,{headers:httpOptions})//ModelNivelUsuario
     .subscribe((data)=>{
 

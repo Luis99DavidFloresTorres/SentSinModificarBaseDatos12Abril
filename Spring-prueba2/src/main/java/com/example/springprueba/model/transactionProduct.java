@@ -22,6 +22,7 @@ public class transactionProduct implements Serializable {
     private Integer nrodoc;
     private String detalle;
     private Integer factura;
+    private String useract;
     @ManyToOne
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @JoinColumn(name = "proveedor_id")

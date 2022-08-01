@@ -4,6 +4,7 @@ package com.example.springprueba.functions.factories;
 import com.example.springprueba.model.*;
 
 import com.example.springprueba.repo.*;
+import org.apache.commons.math3.analysis.function.Log;
 import org.hibernate.type.AnyType;
 import org.springframework.stereotype.Service;
 
@@ -11,6 +12,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Logger;
+
 @Service
 public class FactoryProveedores {
     private final RepoOrdenCompra repoOrdenCompra;
@@ -36,6 +39,7 @@ public class FactoryProveedores {
             for(Object itemcompraFor: itemcompra){
                 itemcompra itemcompraCasteado = (itemcompra) itemcompraFor;
                 Date fechaCompra = itemcompraCasteado.getOrdencompra().getFecha();
+
                 if(((fechaCompra.after(fecha1)) || (fecha1.equals(fechaCompra))) && ((fechaCompra.before(fecha2)) || (fecha2.equals(fechaCompra)))){
                     itemcompraEntreFechas.add(itemcompraCasteado);
                 }
@@ -52,13 +56,28 @@ public class FactoryProveedores {
                 }
             }
             itemcompra = itemcompraEntreFechas;
-        }else if(modulo.equals("cotizacionProveedor")){
+        }else if(modulo.equals("cotizacionProveedor")){ // ya no se usa, se usa en el controllerItem con el POST
+            List<ItemCotizProducto> pr = new ArrayList<>();
             proveedor proveedor = repoProveedor.findByNombre(nombreProveedor);
-            itemcompra= repoCotizProducto.findByProveedor(proveedor);
-            List<cotizProducto> itemcompraEntreFechas = new ArrayList<>();
-            for(Object itemcompraFor: itemcompra){
+            List<cotizProducto> cotizProducto = repoCotizProducto.findByProveedor(proveedor);
+            for(cotizProducto c : cotizProducto){
+                List<ItemCotizProducto> icp = repoItemCotizProd.findByCotizProducto(c);
+                pr.addAll(icp);
+            }
+            //itemcompra= repoCotizProducto.findByProveedor(proveedor);
+            itemcompra = pr;
+            List<ItemCotizProducto> itemcompraEntreFechas = new ArrayList<>();
+            /*for(Object itemcompraFor: itemcompra){
                 cotizProducto itemproductoCasteado = (cotizProducto) itemcompraFor;
                 Date fechaCompra = itemproductoCasteado.getFecha();
+                if(((fechaCompra.after(fecha1)) || (fecha1.equals(fechaCompra))) && ((fechaCompra.before(fecha2)) || (fecha2.equals(fechaCompra)))){
+                    itemcompraEntreFechas.add(itemproductoCasteado);
+                }
+            }*/
+            System.out.println("emtraaaaaaaaaaaaaaaaaaaaa");
+            for(Object itemcompraFor: itemcompra){
+                ItemCotizProducto itemproductoCasteado = (ItemCotizProducto) itemcompraFor;
+                Date fechaCompra = itemproductoCasteado.getCotizProducto().getFecha();
                 if(((fechaCompra.after(fecha1)) || (fecha1.equals(fechaCompra))) && ((fechaCompra.before(fecha2)) || (fecha2.equals(fechaCompra)))){
                     itemcompraEntreFechas.add(itemproductoCasteado);
                 }
@@ -90,7 +109,7 @@ public class FactoryProveedores {
                 }
             }
             itemcompra = itemcompraEntreFechas;
-        } else if(modulo.equals("productosCotizacion")){
+        } else if(modulo.equals("productosCotizacion")){ // ya no se usa, se usa en el controllerItem con el POST
             proveedor proveedor = repoProveedor.findByNombre(nombreProveedor);
             itemcompra= repoItemCotizProd.byProveedor(proveedor);
             List<ItemCotizProducto> itemcompraEntreFechas = new ArrayList<>();

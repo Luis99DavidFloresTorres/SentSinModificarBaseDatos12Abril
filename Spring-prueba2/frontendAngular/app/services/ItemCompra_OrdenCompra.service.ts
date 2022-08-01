@@ -7,6 +7,7 @@ import { ImprimirConsultas } from "../Models/ImprimirConsultaMetodo.model";
 import { ModelItemOrdenCompra } from "../Models/ItemOrdenCompra";
 import { ItemProductoModel } from "../Models/itemProducto.model";
 import { ModelOrdenCompra } from "../Models/OrdenCompra";
+import { ProveedorModel } from "../Models/proveedor.model";
 @Injectable({
   providedIn: "root"
 })
@@ -27,24 +28,32 @@ export class ServiceItemCompra_OrdenCompra{
           if(data[i].ordencompra.nrocot==undefined){
             data[i].ordencompra.nrocot=0;
           }
+
           if(i>0){
+
             if(data[i].ordencompra.nrodoc==data[i-1].ordencompra.nrodoc){
+
               data[i].monto +=  data[i-1].monto;
               if(i==data.length-1){
                 enviar.push(data[i]);
               }
             }else{
+
                 enviar.push(data[i-1]);
+                if(i==data.length-1){
+                  enviar.push(data[i]);
+                }
             }
           }
         }
+
         this.sujetoProveedorOrdenCompra.next(enviar);
     })
   }
   mayorCompra(fecha1:Date, fecha2:Date, nombreProveedor:String){
     console.log(fecha1,fecha2,nombreProveedor);
     this.http.get<any[]>(this.baseUrl+'api/itemcompra_ordencompra/tablas/'+'compra/'+fecha1+'/'+fecha2+'/'+nombreProveedor).subscribe(data=>{
-      console.log(data);
+
       var enviar:ItemProductoModel[]=[];
         for(var i =0; i<data.length;i++){
           if(data[i].transproducto.factura==undefined){
@@ -64,13 +73,15 @@ export class ServiceItemCompra_OrdenCompra{
         this.sujetoProveedorMayorCompra.next(enviar);
     })
   }
-  mayorCotizaciones(fecha1:Date, fecha2:Date, nombreProveedor:String){
-    this.http.get<any[]>(this.baseUrl+'api/itemcompra_ordencompra/tablas/'+'cotizacionProveedor/'+fecha1+'/'+fecha2+'/'+nombreProveedor).subscribe(data=>{
+  mayorCotizaciones(fecha1:Date, fecha2:Date, proveedor:ProveedorModel){
+    this.http.post<any[]>(this.baseUrl+'api/itemcompra_ordencompra/tablas/'+'cotizacionProveedor/'+fecha1+'/'+fecha2+'/', proveedor).subscribe(data=>{
       var enviar:CotizProductoModel[]=[];
+      console.log(data);
         for(var i =0; i<data.length;i++){
-          if(data[i].ordencompra.nrocot==undefined){
+          console.log(data[i]);
+          /*if(data[i].ordencompra.nrocot==undefined){
             data[i].ordencompra.nrocot=0;
-          }
+          }*/
           if(i>0){
             if(data[i].ordencompra.nrodoc==data[i-1].ordencompra.nrodoc){
               data[i].monto +=  data[i-1].monto;
@@ -82,6 +93,11 @@ export class ServiceItemCompra_OrdenCompra{
             }
           }
         }
+
+        if(data.length==1){
+          enviar.push(data[0]);
+        }
+        console.log(enviar);
         this.sujetoProveedorCotizaciones.next(enviar);
     })
   }

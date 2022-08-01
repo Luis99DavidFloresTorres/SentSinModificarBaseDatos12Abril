@@ -1,6 +1,8 @@
 package com.example.springprueba.functions;
 
 import com.example.springprueba.model.itemProducto;
+import com.example.springprueba.model.producto;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -39,7 +41,7 @@ public abstract class depositoAbstractOperations {
         }
         return  returnList;
     }
-    public List<itemProducto> restrictProductoIdDatesEntre2Fechas(List<itemProducto> itemProductosP, Date fecha, Date fecha2, String depositoNombre){
+    public List<itemProducto> restrictProductoIdDatesEntre2Fechas(List<itemProducto> itemProductosP, Date fecha, Date fecha2){
         List<itemProducto> returnArraylistProduct = new ArrayList<>();
         Double invinicial = 0.0;
         Double salidas = 0.0;
@@ -48,13 +50,10 @@ public abstract class depositoAbstractOperations {
         fecha2.setHours(23);
         Integer contador = 0;
         for (itemProducto itemProductoF : itemProductosP) {
-            Integer operation = itemProductoF.getTransproducto().getOper();
+            Integer operation = itemProductoF.getOpe();
             Long idProd = itemProductoF.getProducto().getId();
-            Date fechaTransproducto = itemProductoF.getTransproducto().getFecha();
-            String depositoNombreConsulta = itemProductoF.getTransproducto().getDeposito().getNombre();
-            if(depositoNombreConsulta.equals(depositoNombre)){
+            Date fechaTransproducto = itemProductoF.getFechaact();
                 if (idProd == id) {
-
                     if (rangoMenorDeFechas(fecha, fechaTransproducto)) {
                         invinicial = lessThan320Inicial(operation, itemProductoF, invinicial);
                     } else if((fechaTransproducto.before(fecha2)) || (fecha2.equals(fechaTransproducto)) ){
@@ -76,7 +75,7 @@ public abstract class depositoAbstractOperations {
                     }
                 }
                 contador++;
-            }
+
         }
         //en la ultima iteracion ya no entra al else es por eso que agregamos al final de todo una vez mas
 
@@ -256,6 +255,109 @@ public abstract class depositoAbstractOperations {
         }
         return returnArraylistProduct;
     }
+    public List<itemProducto> kardexProductoEntre2F(List<itemProducto> itemProductosP, Date fechaInicio, Date fechaFinal){
+           //     nos quedamos aqui, los saldos no se adecuan al resultado de solo fecha, los invinicial se van de ingresos y viceversa
+
+        List<itemProducto> returnArraylistProduct = new ArrayList<>();
+        Long idP = itemProductosP.get(0).getProducto_id();
+        Double saldo = 0.0;
+        for (itemProducto itemProductoF : itemProductosP) {
+            Double invinicial = 0.0;
+            Double salidas = 0.0;
+            Double ingresos = 0.0;
+            Integer operation = itemProductoF.getOpe();
+            Long idProductoFor= itemProductoF.getProducto_id();
+
+            if(idP.equals(idProductoFor)){
+                Date fechaTransproducto = itemProductoF.getFechaact();
+                if ((fechaTransproducto.before(fechaFinal)|| fechaTransproducto.equals(fechaFinal))&&(fechaTransproducto.equals(fechaInicio)|| fechaInicio.after(fechaTransproducto))) {
+                    invinicial =lessThan320Inicial(operation,itemProductoF,invinicial);
+                } else {
+                    ingresos = lessThan320SalidasIngresos(operation, itemProductoF, ingresos, salidas, "ingresos");
+                    salidas = lessThan320SalidasIngresos(operation, itemProductoF, ingresos, salidas, "salidas");
+                }
+                itemProductoF.setInvinicial(invinicial);
+                itemProductoF.setProducto_id(itemProductoF.getProducto_id());
+                itemProductoF.setSalidas(salidas);
+                itemProductoF.setIngresos(ingresos);
+                saldo +=invinicial+ingresos-salidas;
+                itemProductoF.setSaldo(saldo);
+                returnArraylistProduct.add(itemProductoF);
+            }else{
+                saldo=0.0;
+                idP=itemProductoF.getProducto_id();
+                Date fechaTransproducto = itemProductoF.getFechaact();
+                if ((fechaTransproducto.before(fechaFinal)|| fechaTransproducto.equals(fechaFinal))&&(fechaTransproducto.equals(fechaInicio)|| fechaTransproducto.after(fechaInicio))) {
+                    invinicial =lessThan320Inicial(operation,itemProductoF,invinicial);
+                } else {
+                    ingresos = lessThan320SalidasIngresos(operation, itemProductoF, ingresos, salidas, "ingresos");
+                    salidas = lessThan320SalidasIngresos(operation, itemProductoF, ingresos, salidas, "salidas");
+                }
+                itemProductoF.setInvinicial(invinicial);
+                itemProductoF.setProducto_id(itemProductoF.getProducto_id());
+                itemProductoF.setSalidas(salidas);
+                itemProductoF.setIngresos(ingresos);
+                saldo +=invinicial+ingresos-salidas;
+                itemProductoF.setSaldo(saldo);
+                returnArraylistProduct.add(itemProductoF);
+            }
+
+        }
+        return returnArraylistProduct;
+    }
+    public List<itemProducto> restrictProductoIdDatesEntre2FechasProductos(List<itemProducto> itemProductosP, Date fecha, Date fecha2, String depositoNombre,producto producto){
+        List<itemProducto> returnArraylistProduct = new ArrayList<>();
+        Double invinicial = 0.0;
+        Double salidas = 0.0;
+        Double ingresos = 0.0;
+        Long id = itemProductosP.get(0).getProducto().getId();
+        fecha2.setHours(23);
+        Integer contador = 0;
+        for (itemProducto itemProductoF : itemProductosP) {
+            Integer operation = itemProductoF.getTransproducto().getOper();
+            Long idProd = itemProductoF.getProducto().getId();
+            Date fechaTransproducto = itemProductoF.getTransproducto().getFecha();
+            String nombreDeposito = itemProductoF.getTransproducto().getDeposito().getNombre();
+            if(depositoNombre.equals(nombreDeposito)){
+                if (idProd == id) {
+                    if (rangoMenorDeFechas(fecha, fechaTransproducto) && producto.getId().equals(idProd) ) {
+                        invinicial = lessThan320Inicial(operation, itemProductoF, invinicial);
+                    } else if(fechaTransproducto.before(fecha2) || fecha2.equals(fechaTransproducto) ){
+                        ingresos = lessThan320SalidasIngresos(operation, itemProductoF, ingresos, salidas, "ingresos");
+                        salidas = lessThan320SalidasIngresos(operation, itemProductoF, ingresos, salidas, "salidas");
+                    }
+                } else {
+                    id = idProd;
+                    returnArraylistProduct = saveValuesInvSalIngSald(itemProductosP.get(contador-1), ingresos, salidas, invinicial, returnArraylistProduct);
+                    invinicial = 0.0;
+                    ingresos = 0.0;
+                    salidas = 0.0;
+                    if (fecha.after(fechaTransproducto) && producto.getId().equals(idProd)) {
+                        invinicial = lessThan320Inicial(operation, itemProductoF, invinicial);
+                    }else if((fechaTransproducto.before(fecha2) || fecha2.equals(fechaTransproducto))&& producto.getId().equals(idProd) ){
+                        ingresos = lessThan320SalidasIngresos(operation, itemProductoF, ingresos, salidas, "ingresos");
+                        salidas = lessThan320SalidasIngresos(operation, itemProductoF, ingresos, salidas, "salidas");
+                    }
+
+                }
+            }
+
+            contador++;
+        }
+        //en la ultima iteracion ya no entra al else es por eso que agregamos al final de todo una vez mas
+        if(depositoNombre.equals(itemProductosP.get(contador-1).getDepositoNombre())){
+            itemProducto lastItemProduct = itemProductosP.get(contador-1);
+            lastItemProduct.setInvinicial(invinicial);
+            lastItemProduct.setSalidas(salidas);
+            lastItemProduct.setIngresos(ingresos);
+            lastItemProduct.setSaldo(ingresos+invinicial-salidas);
+            returnArraylistProduct.add(lastItemProduct);
+        }
+
+
+        return returnArraylistProduct;
+    }
+
     public boolean rangoMenorDeFechas(Date posterior, Date anterior){
         if(posterior.after(anterior)){
             return  true;

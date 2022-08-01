@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { DateAdapter } from '@angular/material/core';
 import { MatDialog } from '@angular/material/dialog';
+import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Observable, Subject, Subscription } from 'rxjs';
 import { map, startWith, takeUntil } from 'rxjs/operators';
@@ -17,7 +18,6 @@ import { BuscarProveedoresComponent } from '../buscar-proveedores/buscar-proveed
   styleUrls: ['./producto-orden-compra-prov.component.css']
 })
 export class ProductoOrdenCompraProvComponent implements OnInit {
-
   subscriptionAllproveedores:Subscription|any;
   subscriptionProveedor :Subscription|any;
   subscriptionProveedor2Fechas:Subscription|any;
@@ -25,8 +25,9 @@ export class ProductoOrdenCompraProvComponent implements OnInit {
   filteredOptions :Observable<string[]>|any;
   options:String[] = [];
   sujeto = new Subject();
+  totalCosto = new FormControl();
   formGroup:FormGroup|any;
-  activar=false;
+  @ViewChild(MatSort) sort: MatSort | any;
   dataSource= new MatTableDataSource<ModelItemOrdenCompra>();
   displayedColumns:String[] = []//"ordencompra.fecha","ordencompra.nrodoc","ordencompra.oper","ordencompra.nrocot","ordencompra.useract","ordencompra.detalle",""
   proveedorModel : ProveedorModel|any;
@@ -74,7 +75,7 @@ export class ProductoOrdenCompraProvComponent implements OnInit {
       );
       this.options = proveedoresNombre;
     })
-    this.subscriptionProveedor = this.serviceProveedor.listenerProductoOrdenCompra().subscribe(data=>{
+    this.subscriptionProveedor = this.serviceProveedor.listenerProductoItemOrdenCompra().subscribe(data=>{
       this.proveedorModel = data;
       this.formGroup.get('myControl').setValue(data.nombre);
     })
@@ -85,8 +86,19 @@ export class ProductoOrdenCompraProvComponent implements OnInit {
     var palabra =  this.options.filter(option => option.toLowerCase().includes(filterValue));
     return palabra;
   }
+  ngAfterViewInit(): void {
+    this.dataSource.sort = this.sort;
+    this.dataSource.sortingDataAccessor = this.pathDataAccessor;
+
+  }
+  pathDataAccessor(item: any, path: string): any {
+
+    return path.split('.')
+      .reduce((accumulator: any, key: string) => {
+        return accumulator ? accumulator[key] : undefined;
+      }, item);
+  }
   buscar(){
-    this.activar=true;
     if(this.subscriptionProductoOrdenCompra!=undefined){
       this.subscriptionProductoOrdenCompra.unsubscribe();
     }
@@ -94,6 +106,12 @@ export class ProductoOrdenCompraProvComponent implements OnInit {
     this.subscriptionProductoOrdenCompra = this.serviceItemCompra_OrdenCompra.listenerProductoOrdenCompra().subscribe(proveedor=>{
       this.dataSource.data = proveedor
       this.displayedColumns = ['ordencompra.fecha','ordencompra.nrodoc','ordencompra.oper','ordencompra.useract','producto.nombre','cantidad','precio','monto'];
+      var suma:number = 0;
+      proveedor.forEach(d=>{
+        if(d.monto!=undefined)
+        suma+=d.monto.valueOf();
+      })
+      this.totalCosto.setValue(suma);
     })
   }
   buscarProveedores(){

@@ -39,7 +39,17 @@
       </mat-menu>
       <button mat-raised-button [matMenuTriggerFor]="FindBetween2Dates" color="primary">Entre 2 fechas</button>
       <mat-menu #FindBetween2Dates="matMenu" color="primary" class="menu">
-        <button mat-menu-item (click)="entre2fechas()" color="basic" class= "boton">Fechas</button>
+        <button mat-menu-item (click)="entre2fechas()" color="basic" class= "boton">Producto por Periodo</button>
+        <button mat-menu-item (click)="entre2fechasSalidas()" color="basic" class= "boton">Salidas</button>
+        <button mat-menu-item (click)="entre2fechasIngresos()" color="basic" class= "boton">Ingresos</button>
+        <button mat-menu-item (click)="entre2fechasKardex()" color="basic" class= "boton">Kardex</button>
+      </mat-menu>
+      <button mat-raised-button [matMenuTriggerFor]="FindBetween2DatesProductos" color="primary">Entre 2 fechas y productos</button>
+      <mat-menu #FindBetween2DatesProductos="matMenu" color="primary" class="menu">
+        <button mat-menu-item (click)="entre2fechasPeriodosProductos()" color="basic" class= "boton">Producto por Periodo</button>
+        <button mat-menu-item (click)="entre2fechasSalidasProductos()" color="basic" class= "boton">Salidas</button>
+        <button mat-menu-item (click)="entre2fechasIngresosProductos()" color="basic" class= "boton">Ingresos</button>
+        <button mat-menu-item (click)="entre2fechasKardexProductos()" color="basic" class= "boton">Kardex</button>
       </mat-menu>
     </div>
   </div>
@@ -238,6 +248,38 @@
       <mat-cell *matCellDef="let element">  {{element.unidad}} </mat-cell>
     </ng-container>
 
+
+
+
+    <ng-container matColumnDef="transproducto.nrodoc">
+      <mat-header-cell  *matHeaderCellDef mat-sort-header>Numero documento
+      </mat-header-cell>
+      <mat-cell *matCellDef="let element">  {{element.transproducto.nrodoc}} </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="transproducto.oper">
+      <mat-header-cell  *matHeaderCellDef mat-sort-header>Oper</mat-header-cell>
+      <mat-cell *matCellDef="let element">  {{element.transproducto.oper|ope}} </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="transproducto.fecha">
+      <mat-header-cell  *matHeaderCellDef mat-sort-header>Fecha</mat-header-cell>
+      <mat-cell *matCellDef="let element">  {{element.transproducto.fecha|date: 'dd/MM/yyyy'}} </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="transproducto.detalle">
+      <mat-header-cell  *matHeaderCellDef mat-sort-header>Observaciones</mat-header-cell>
+      <mat-cell *matCellDef="let element">  {{element.transproducto.detalle}} </mat-cell>
+    </ng-container>
+
+
+    <ng-container matColumnDef="transproducto.cliente.nombre">
+      <mat-header-cell  *matHeaderCellDef mat-sort-header>Cliente</mat-header-cell>
+      <mat-cell *matCellDef="let element">  {{element.transproducto.cliente.nombre}} </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="transproducto.proveedor.nombre">
+      <mat-header-cell  *matHeaderCellDef mat-sort-header>Proveedor</mat-header-cell>
+      <mat-cell *matCellDef="let element">  {{element.transproducto.proveedor|nullWithDefault}} </mat-cell>
+    </ng-container>
     <ng-container matColumnDef="enlace">
       <mat-header-cell  *matHeaderCellDef mat-sort-header>Enlaces</mat-header-cell>
       <mat-cell *matCellDef="let element">

@@ -12,16 +12,16 @@ import java.util.List;
 
 @Entity(name = "notaventa")
 @Data
-public class notaventa implements Serializable {
+public class notaventa {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private Double total;
-    /*@JsonInclude(JsonInclude.Include.NON_NULL)
+
     @ManyToOne
-    @JoinColumn(name = "empleado_id")
-    private empleado empleado;*/
+    @JoinColumn(name= "empleado_id")
+    private Usuario usuario;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private Integer nrodoc;
     @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -35,8 +35,11 @@ public class notaventa implements Serializable {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String detalle;
     private Integer oper;
+    //private Integer nrofact;
     private Date fecha;
     private Double tc;
+    private String useract;
+    private String nrofact;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @ManyToOne
     @JoinColumn(name = "proyecto_id")

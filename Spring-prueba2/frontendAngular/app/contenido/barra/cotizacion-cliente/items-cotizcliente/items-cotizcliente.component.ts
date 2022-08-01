@@ -423,7 +423,6 @@ export class ItemsCotizclienteComponent implements OnInit {
           monto: producto.precio,
         };
         item.proyectoTablaHijos.itemProyectos.push(itemProyecto)
-        console.log(item);
         if (this.tablaDatos.length == 0) {
           this.tablaDatos.push(itemProyecto);
           this.dataSource.data = this.tablaDatos;

@@ -32,33 +32,33 @@
     </mat-menu>
     <button *ngIf="claseAlmacenes.valor" mat-button [matMenuTriggerFor]="beforeMenuAlmacenes">Almacenes</button>
     <mat-menu #beforeMenuAlmacenes="matMenu" >
-      <button *ngIf="subClaseRegistrarCotizacionProveedor.valor" mat-menu-item routerLink="/prueba">Registrar Cotizacion Proveedor</button>
+      <button *ngIf="subClaseRegistrarCotizacionProveedor.valor" mat-menu-item routerLink="/cotizacionFechas">Registrar Cotizacion Proveedor</button>
       <button *ngIf="subClaseRegistrarOrdenCompra.valor" mat-menu-item routerLink="/ordencompra">Registrar orden de compra</button>
       <button *ngIf="subClaseRegistrarEntradaProducto.valor" mat-menu-item routerLink="/entradaProducto">Registrar entrada de productos</button>
       <button *ngIf="subClaseRegistrarSalidaProductos.valor" mat-menu-item routerLink="/salidaProducto">Registrar salida de productos</button>
-      <button *ngIf="subClaseRegistrarGarantia.valor" mat-menu-item routerLink="/">Registrar garantia</button>
+      <button *ngIf="subClaseRegistrarGarantia.valor" mat-menu-item routerLink="/notaventaFechas">Registrar garantia</button>
     </mat-menu>
     <button *ngIf="claseProyecto.valor" mat-button [matMenuTriggerFor]="beforeMenuProyectos">Proyectos</button>
     <mat-menu #beforeMenuProyectos="matMenu">
       <button *ngIf="subClaseCotizacionProyecto.valor" mat-menu-item routerLink="/prueba">Cotización Proyecto</button>
-      <button *ngIf="subClaseGestionProyecto.valor" mat-menu-item routerLink="/">Gestión Proyecto</button>
-      <button *ngIf="subClaseAdjudicarProyecto.valor" mat-menu-item routerLink="/prueba">Adjudicar Proyecto</button>
-      <button *ngIf="subClaseCobroProyecto.valor" mat-menu-item routerLink="/">Cobro Proyecto</button>
+      <button *ngIf="subClaseGestionProyecto.valor" mat-menu-item routerLink="/gestionProyecto">Gestión Proyecto</button>
+      <button *ngIf="subClaseAdjudicarProyecto.valor" mat-menu-item routerLink="/adjudicarProyecto">Adjudicar Proyecto</button>
+      <button *ngIf="subClaseCobroProyecto.valor" mat-menu-item routerLink="/cobroProyecto">Cobro Proyecto</button>
       <button *ngIf="subClaseConsultas.valor" mat-menu-item [matMenuTriggerFor]="beforeMenuProyectosConsultas" routerLink="/prueba">Consultas</button>
-      <button *ngIf="subClaseSolicitudPresupuesto.valor" mat-menu-item routerLink="/">Solicitud de Presupuesto</button>
-      <button *ngIf="subClaseDescargoGasto.valor"  mat-menu-item routerLink="/prueba">Descargo de Gastos</button>
-      <button *ngIf="subClaseGestionHerramienta.valor" mat-menu-item routerLink="/">Gestion de Herramientas</button>
-      <button *ngIf="subClaseAsignacionHerramienta.valor" mat-menu-item routerLink="/prueba">Asignación de Herramientas</button>
-      <button *ngIf="subClaseDevolucionHerramienta.valor" mat-menu-item routerLink="/">Devolución de Herramientas</button>
+      <button *ngIf="subClaseSolicitudPresupuesto.valor" mat-menu-item routerLink="/solicitudPresupuesto">Solicitud de Presupuesto</button>
+      <button *ngIf="subClaseDescargoGasto.valor"  mat-menu-item routerLink="/descargoGastos">Descargo de Gastos</button>
+      <button *ngIf="subClaseGestionHerramienta.valor" mat-menu-item routerLink="/gestionHerramienta">Gestion de Herramientas</button>
+      <button *ngIf="subClaseAsignacionHerramienta.valor" mat-menu-item routerLink="/asignacionHerramienta">Asignación de Herramientas</button>
+      <button *ngIf="subClaseDevolucionHerramienta.valor" mat-menu-item routerLink="/devolucionHerramienta">Devolución de Herramientas</button>
     </mat-menu>
     <mat-menu #beforeMenuProyectosConsultas="matMenu" >
-      <button *ngIf="subClaseEstadoProyecto.valor" mat-menu-item routerLink="/prueba">Estado de Proyectos</button>
-      <button *ngIf="subClaseEntregaProductosProyecto.valor" mat-menu-item routerLink="/">Entregas Productos por Proyecto</button>
-      <button *ngIf="subClaseEntregaProductoPorFecha.valor" mat-menu-item routerLink="/prueba">Entregas Productos por Fecha</button>
+      <button *ngIf="subClaseEstadoProyecto.valor" mat-menu-item routerLink="/estadoProyecto">Estado de Proyectos</button>
+      <button *ngIf="subClaseEntregaProductosProyecto.valor" mat-menu-item routerLink="/entregaProductoProyecto">Entregas Productos por Proyecto</button>
+      <button *ngIf="subClaseEntregaProductoPorFecha.valor" mat-menu-item routerLink="/entregaPorProductoPorFecha">Entregas Productos por Fecha</button>
       <button mat-menu-item routerLink="/">Gastos del Proyecto</button>
-      <button mat-menu-item routerLink="/prueba">Proyectos finalizados y Cobrados</button>
-      <button mat-menu-item routerLink="/">Seguimiento por Usuario</button>
-      <button mat-menu-item routerLink="/">Resultado Presumible Proyecto</button>
+      <button mat-menu-item routerLink="/">Proyectos finalizados y Cobrados</button>
+      <button mat-menu-item routerLink="/seguimientoUsuario">Seguimiento por Usuario</button>
+      <button mat-menu-item routerLink="/resultadoPresumible">Resultado Presumible Proyecto</button>
     </mat-menu>
     <button *ngIf="claseCliente.valor" mat-button [matMenuTriggerFor]="beforeMenuClientes">Clientes</button>
     <mat-menu #beforeMenuClientes="matMenu" >
@@ -101,11 +101,11 @@
       <button mat-menu-item *ngIf="subClaseInformeHerramienta.valor" [matMenuTriggerFor]="beforeMenuInformesHerramientas" routerLink="/">Informes de Herramientas</button>
     </mat-menu>
     <mat-menu #beforeMenuInformesVentas="matMenu">
-      <button mat-menu-item routerLink="/prueba">Informe de Ventas</button>
-      <button mat-menu-item routerLink="/">Ventas por Vendedor</button>
-      <button mat-menu-item routerLink="/prueba">Comisiones por Ventas</button>
+      <button mat-menu-item routerLink="/informeVentas">Informe de Ventas</button>
+      <button mat-menu-item routerLink="/ventasporvendedor">Ventas por Vendedor</button>
+      <button mat-menu-item routerLink="/comisionesporventas">Comisiones por Ventas</button>
       <button mat-menu-item routerLink="/">Ventas y Cotizaciones</button>
-      <button mat-menu-item routerLink="/prueba">Ventas de Productos</button>
+      <button mat-menu-item routerLink="/ventasdeproductos">Ventas de Productos</button>
       <button mat-menu-item routerLink="/">Ordenes de Clientes</button>
     </mat-menu>
     <mat-menu #beforeMenuInformesClientes="matMenu" >
@@ -114,15 +114,15 @@
       <button mat-menu-item routerLink="/prueba">Cotizaciones de Productos</button>
     </mat-menu>
     <mat-menu #beforeMenuInformesAlmacenes="matMenu" >
-      <button mat-menu-item routerLink="/prueba">Entradas/ Salidas Productos</button>
-      <button mat-menu-item routerLink="/">Entrada Productos Valorado</button>
-      <button mat-menu-item routerLink="/prueba">Salida Productos Valorado</button>
-      <button mat-menu-item routerLink="/prueba">Utilidad Salida de Productos</button>
+      <button mat-menu-item routerLink="/informeEntradaSalidasProductos">Entradas/ Salidas Productos</button>
+      <button mat-menu-item routerLink="/informeEntradaProductos">Entrada Productos Valorado</button>
+      <button mat-menu-item routerLink="/informeSalidasProductos">Salida Productos Valorado</button>
+      <button mat-menu-item routerLink="/utilidadSalidaProductos">Utilidad Salida de Productos</button>
       <button mat-menu-item routerLink="/">Informe de Garantias</button>
       <button mat-menu-item routerLink="/prueba">Lista de Productos Seriales</button>
     </mat-menu>
     <mat-menu #beforeMenuInformesVarios="matMenu" >
-      <button mat-menu-item routerLink="/prueba">Informe Ordenes Compra</button>
+      <button mat-menu-item routerLink="/informeOrdenesCompra">Informe Ordenes Compra</button>
       <button mat-menu-item routerLink="/">Informe Cotizaciones Proveedores</button>
     </mat-menu>
     <mat-menu #beforeMenuInformesHerramientas="matMenu" >
@@ -131,13 +131,13 @@
       <button mat-menu-item routerLink="/">Kardex Herramientas</button>
     </mat-menu>
     <mat-menu #beforeMenuInformesProyectos="matMenu" >
-      <button mat-menu-item routerLink="/prueba">Proyecto y Cotizaciones Productos</button>
+      <button mat-menu-item routerLink="/proyectoCotizaciones">Proyecto y Cotizaciones Productos</button>
       <button mat-menu-item routerLink="/">Informe de Descargos Gastos</button>
       <button mat-menu-item routerLink="/prueba">Descargos Gastos por Proyecto</button>
-      <button mat-menu-item routerLink="/">Solicitues de Presupuesto</button>
+      <button mat-menu-item routerLink="/informeSolicitudPresupuesto">Solicitues de Presupuesto</button>
       <button mat-menu-item routerLink="/prueba">Solicitudes Presupuesto por Proyecto</button>
-      <button mat-menu-item routerLink="/">Solicitudes Presupuesto por Responsable</button>
-      <button mat-menu-item routerLink="/prueba">Solicitud/ Descargos por Responsable</button>
+      <button mat-menu-item routerLink="/informeSolicitudPresupuestoPorResponsable">Solicitudes Presupuesto por Responsable</button>
+      <button mat-menu-item routerLink="/informeSolicitudPresupuestoDescargoResponsable">Solicitud/ Descargos por Responsable</button>
       <button mat-menu-item routerLink="/">Solicitud/ Descargos por Proyecto</button>
     </mat-menu>
     <button *ngIf="claseCodificador.valor" mat-button [matMenuTriggerFor]="beforeMenuCodificadores">Codificadores</button>

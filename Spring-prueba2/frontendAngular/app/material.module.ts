@@ -21,14 +21,17 @@ import {MatStepperModule} from '@angular/material/stepper';
 import {MatChipsModule} from '@angular/material/chips';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import {MatTreeModule} from '@angular/material/tree';
+import {MatRadioModule} from '@angular/material/radio';
+
 
 @NgModule({
   imports:[MatSidenavModule,MatButtonModule, MatListModule,MatIconModule,MatToolbarModule,FormsModule,MatFormFieldModule
     ,MatInputModule,MatTableModule, MatNativeDateModule, MatDatepickerModule, MatDialogModule,MatSelectModule,MatMenuModule
-    ,MatPaginatorModule,MatCardModule, MatSortModule, MatCheckboxModule, MatAutocompleteModule, MatStepperModule, MatChipsModule, MatTreeModule],
+    ,MatPaginatorModule,MatCardModule, MatSortModule, MatCheckboxModule, MatAutocompleteModule, MatStepperModule, MatChipsModule, MatTreeModule,
+     MatRadioModule],
   exports:[MatSidenavModule,MatButtonModule, MatListModule,MatIconModule,MatToolbarModule,FormsModule,MatFormFieldModule
     ,MatInputModule,MatTableModule, MatDatepickerModule,MatDialogModule,MatSelectModule,MatMenuModule,MatPaginatorModule
-    ,MatCardModule, MatSortModule, MatCheckboxModule, MatAutocompleteModule, MatStepperModule, MatChipsModule, MatTreeModule],
+    ,MatCardModule, MatSortModule, MatCheckboxModule, MatAutocompleteModule, MatStepperModule, MatChipsModule, MatTreeModule, MatRadioModule],
 })
 export class MaterialModule{
 }

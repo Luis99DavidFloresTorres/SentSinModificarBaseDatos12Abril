@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { DateAdapter } from '@angular/material/core';
 import { MatDialog } from '@angular/material/dialog';
+import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Observable, Subject, Subscription } from 'rxjs';
 import { map, startWith, takeUntil } from 'rxjs/operators';
@@ -25,11 +26,13 @@ export class EntregaProductoporClienteComponent implements OnInit {
   options:String[] = [];
   sujeto = new Subject();
   formGroup:FormGroup|any;
-  activar=false;
   dataSource= new MatTableDataSource<ItemProductoModel>();
   displayedColumns:String[] = []
   clienteModel : ModelCliente|any;
   clienteAll:ModelCliente[] = []
+  cantidad= new FormControl();
+  costoTotal =  new FormControl();
+  @ViewChild(MatSort) sort: MatSort | any;
   range = new FormGroup({
     start: new FormControl(),
     end: new FormControl(),
@@ -52,7 +55,18 @@ export class EntregaProductoporClienteComponent implements OnInit {
       this.subscriptionMayordeCompras.unsubscribe();
     }
   }
+  pathDataAccessor(item: any, path: string): any {
 
+    return path.split('.')
+      .reduce((accumulator: any, key: string) => {
+        return accumulator ? accumulator[key] : undefined;
+      }, item);
+  }
+  ngAfterViewInit(): void {
+    this.dataSource.sort = this.sort;
+    this.dataSource.sortingDataAccessor = this.pathDataAccessor;
+
+  }
   ngOnInit(): void {
     this.formGroup= this.formBuilder.group({
 
@@ -66,15 +80,14 @@ export class EntregaProductoporClienteComponent implements OnInit {
       data.forEach(proveedor=>{
         clienteNombre.push(proveedor.nombre);
       })
-      this.filteredOptions = this.formGroup.get('myControl').valueChanges.pipe(
-        takeUntil(this.sujeto),
-        startWith(''),
-        map((value:String) => this._filter(value))
-      );
       this.options = clienteNombre;
     })
+    if(this.subscriptionCliente!=undefined){
+      this.subscriptionCliente.unsubscribe();
+    }
     this.subscriptionCliente = this.serviceCliente.listenerEncontrarProductoPorCliente().subscribe(data=>{
       this.clienteModel = data;
+     // console.log(data);
       this.formGroup.get('myControl').setValue(data.nombre);
     })
   }
@@ -84,14 +97,25 @@ export class EntregaProductoporClienteComponent implements OnInit {
     return palabra;
   }
   buscar(){
-    this.activar=true;
+
     if(this.subscriptionMayordeCompras!=undefined){
       this.subscriptionMayordeCompras.unsubscribe();
     }
-    this.serviceItemProducto.entregaProductoPorCliente(this.range.get('start')?.value,this.range.get('end')?.value, this.formGroup.get('myControl').value);
+    this.serviceItemProducto.entregaProductoPorCliente(this.range.get('start')?.value,this.range.get('end')?.value, this.clienteModel);
     this.subscriptionMayordeCompras= this.serviceItemProducto.listenerBuscarEntregasProductoPorCliente().subscribe((mayorProductosCompra:any)=>{
+      var cantidadTotal = 0;
+      var costoTotal = 0;
+
+      mayorProductosCompra.forEach((d:any)=>{
+        var monto = d.cantidad.valueOf() * d.costo.valueOf();
+        d.monto = monto
+        costoTotal += monto;
+        cantidadTotal +=d.cantidad;
+      })
       this.dataSource.data = mayorProductosCompra
-      this.displayedColumns = ['transproducto.fecha','transproducto.nrodoc','transproducto.oper','productoNombre','cantidad','precioProducto','costo','costoTotal'];
+      this.displayedColumns = ['transproducto.fecha','transproducto.nrodoc','transproducto.oper','transproducto.proyecto.nombre','producto.nombre','serial','cantidad','producto.precio','costo','monto'];
+      this.cantidad.setValue(cantidadTotal);
+      this.costoTotal.setValue(costoTotal)
     })
   }
   buscarClientes(){
@@ -100,5 +124,30 @@ export class EntregaProductoporClienteComponent implements OnInit {
   }
   hacerFiltro(filtro: string){
     this.dataSource.filter = filtro;
+    this.dataSource.filterPredicate = (data, filter: string)  => {
+      const accumulator = (currentTerm:any, key:any) => {
+        return this.nestedFilterCheck(currentTerm, data, key);
+      };
+      const dataStr = Object.keys(data).reduce(accumulator, '').toLowerCase();
+      // Transform the filter by converting it to lowercase and removing whitespace.
+      const transformedFilter = filter.trim().toLowerCase();
+      return dataStr.indexOf(transformedFilter) !== -1;
+    };
+  }
+
+  nestedFilterCheck(search:any, data:any, key:any) {
+    if (typeof data[key] === 'object') {
+      for (const k in data[key]) {
+        if (data[key][k] !== null) {
+          search = this.nestedFilterCheck(search, data[key], k);
+        }
+      }
+    } else {
+      search += data[key];
+    }
+    return search;
+  }
+  clienteGuardar(index:any){
+    this.clienteModel = this.clienteAll[index];
   }
 }

@@ -39,6 +39,12 @@ export class CotizacionClienteComponent implements OnInit, OnDestroy {
     }
   }
   ngOnInit(): void {
+    if(this.subscribProducto!=undefined){
+      this.subscribProducto.unsubscribe();
+    }
+    if(this.subscribCotizacionProyecto!=undefined){
+      this.subscribCotizacionProyecto.unsubscribe();
+    }
     this.subscribProducto =this.subjectProducto.subscribe(datos=>{
       this.subscribCotizacionProyecto=this.subjectCotizacionProyecto.subscribe(proyecto=>{
         var contador = 0;

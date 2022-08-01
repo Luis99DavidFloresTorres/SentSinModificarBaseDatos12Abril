@@ -28,7 +28,13 @@ export class ServiceItemDeposito{
   private itemProductoPorMayorSalidas= new Subject<ItemProductoModel[]>();
   private itemProductoOperacion = new Subject<ItemProductoModel[]>();
   private itemProductoPeriodo2Fechas = new Subject<ItemProductoModel[]>();
-
+  private itemProductoPeriodo2FechasKardex = new Subject<ItemProductoModel[]>();
+  private itemProductoPeriodo2FechasIngresos = new Subject<ItemProductoModel[]>();
+  private itemProductoPeriodo2FechasSalidas = new Subject<ItemProductoModel[]>();
+  private itemProductoPeriodo2FechasSalidasProductos = new Subject<ItemProductoModel[]|any[]>();
+  private itemProductoPeriodo2FechasIngresosProductos = new Subject<ItemProductoModel[]>();
+  private itemProductoPeriodo2FechasKardexProductos= new Subject<ItemProductoModel[]>();
+  private itemProductoPeriodo2FechasProductoPeriodo= new Subject<ItemProductoModel[]>();
   constructor(private http:HttpClient){
 
   }
@@ -111,8 +117,69 @@ export class ServiceItemDeposito{
       this.itemProductoPeriodo2Fechas.next(vector);
     });
   }
+  obtenerPorPeriodoEntre2FechasSalidas(fecha: string,fecha2:string,depositoNombre:string){
+    this.http.post<ItemProductoModel[]>(this.baseUrl+`api/itemDepositoProducto/getOperaciones4/${fecha}/${fecha2}/${depositoNombre}`, fecha)
+    .subscribe((data)=>{
+      var vector: ItemProductoModel[]=data;
+      this.itemProductoPeriodo2FechasSalidas.next(vector);
+    });
+  }
+  obtenerPorPeriodoEntre2FechasIngresos(fecha: string,fecha2:string,depositoNombre:string){
+    this.http.post<ItemProductoModel[]>(this.baseUrl+`api/itemDepositoProducto/getOperaciones3/${fecha}/${fecha2}/${depositoNombre}`, fecha)
+    .subscribe((data)=>{
+      var vector: ItemProductoModel[]=data;
+      this.itemProductoPeriodo2FechasIngresos.next(vector);
+    });
+  }
+
+  obtenerPorPeriodoEntre2FechasKardex(fecha: string,fecha2:string,depositoNombre:string){
+    this.http.post<ItemProductoModel[]>(this.baseUrl+`api/itemDepositoProducto/getOperacionesKardex/${fecha}/${fecha2}/${depositoNombre}`, fecha)
+    .subscribe((data)=>{
+      var vector: ItemProductoModel[]=data;
+      this.itemProductoPeriodo2FechasKardex.next(vector);
+    });
+  }
+  obtenerPorPeriodoEntre2FechasSalidasProductos(fecha: string,fecha2:string, producto:ProductoModel,depositoNombre:string){
+    this.http.post<ItemProductoModel[]>(this.baseUrl+`api/itemDepositoProducto/getOperacionesSalidasProducto/${fecha}/${fecha2}/${depositoNombre}`, producto)
+    .subscribe((data)=>{
+      console.log("Entraaaaa")
+      console.log(data);
+      var vector: ItemProductoModel[]=data;
+      this.itemProductoPeriodo2FechasSalidasProductos.next(vector);
+    });
+  }
+  obtenerPorPeriodoEntre2FechasIngresosProductos(fecha: string,fecha2:string, producto:ProductoModel,depositoNombre:string){
+    this.http.post<ItemProductoModel[]>(this.baseUrl+`api/itemDepositoProducto/getOperacionesIngresosProducto/${fecha}/${fecha2}/${depositoNombre}`, producto)
+    .subscribe((data)=>{
+      var vector: ItemProductoModel[]=data;
+      this.itemProductoPeriodo2FechasIngresosProductos.next(vector);
+    });
+  }
+  obtenerPorPeriodoEntre2FechasKardexProductos(fecha: string,fecha2:string,producto:ProductoModel,depositoNombre:string){
+    this.http.post<ItemProductoModel[]>(this.baseUrl+`api/itemDepositoProducto/getOperacionesKardexProducto/${fecha}/${fecha2}/${depositoNombre}`, producto)
+    .subscribe((data)=>{
+      var vector: ItemProductoModel[]=data;
+      this.itemProductoPeriodo2FechasKardexProductos.next(vector);
+    });
+  }
+  obtenerPorPeriodoEntre2FechasProductoPeriodo(fecha: string,fecha2:string, producto:ProductoModel,depositoNombre:string){
+    this.http.post<ItemProductoModel[]>(this.baseUrl+`api/itemDepositoProducto/getOperacionesProductoPeriodo/${fecha}/${fecha2}/${depositoNombre}`, producto)
+    .subscribe((data)=>{
+      var vector: ItemProductoModel[]=data;
+      this.itemProductoPeriodo2FechasProductoPeriodo.next(vector);
+    });
+  }
   listenerProductoPeriodo2Fechas(){
     return this.itemProductoPeriodo2Fechas.asObservable();
+  }
+  listenerProductoPeriodo2FechasIngresos(){
+    return this.itemProductoPeriodo2FechasIngresos.asObservable();
+  }
+  listenerProductoPeriodo2FechasSalidas(){
+    return this.itemProductoPeriodo2FechasSalidas.asObservable();
+  }
+  listenerProductoPeriodo2FechasKardex(){
+    return this.itemProductoPeriodo2FechasKardex.asObservable();
   }
   listenerDatosItemProducto(){
     return this.itemProductoSubject;
@@ -146,5 +213,17 @@ export class ServiceItemDeposito{
     .subscribe((data)=>{
 
     });
+  }
+  listeneritemProductoPeriodo2FechasProductoPeriodo(){
+    return this.itemProductoPeriodo2FechasProductoPeriodo.asObservable();
+  }
+  listeneritemProductoPeriodo2FechasSalidasProductos(){
+    return this.itemProductoPeriodo2FechasSalidasProductos.asObservable();
+  }
+  listeneritemProductoPeriodo2FechasKardexProductos(){
+    return this.itemProductoPeriodo2FechasKardexProductos.asObservable();
+  }
+  listeneritemProductoPeriodo2FechasIngresosProductos(){
+    return this.itemProductoPeriodo2FechasIngresosProductos.asObservable();
   }
 }

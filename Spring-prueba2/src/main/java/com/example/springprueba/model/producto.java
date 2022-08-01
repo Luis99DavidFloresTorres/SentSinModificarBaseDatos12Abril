@@ -84,6 +84,9 @@ public class producto implements Serializable { //que es precio medio
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @Transient
     private double costoTotal;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @Transient
+    private double utilidadInforme;
     @JsonIgnore
     @OneToMany(mappedBy = "producto",fetch = FetchType.LAZY)
     @JsonInclude(JsonInclude.Include.NON_NULL)

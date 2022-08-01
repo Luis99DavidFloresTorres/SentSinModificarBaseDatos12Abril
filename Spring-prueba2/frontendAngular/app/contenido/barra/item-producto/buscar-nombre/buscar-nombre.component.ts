@@ -1,7 +1,7 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import {FormControl} from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import {Observable} from 'rxjs';
+import {Observable, Subscription} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
 import { ProductoModel } from 'src/app/Models/producto.model';
 import { ServiceItemProducto } from 'src/app/services/itemProducto.service';
@@ -13,17 +13,25 @@ import { ServiceProducto } from 'src/app/services/producto.service';
   templateUrl: './buscar-nombre.component.html',
   styleUrls: ['./buscar-nombre.component.css']
 })
-export class BuscarNombreComponent implements OnInit {
+export class BuscarNombreComponent implements OnInit, OnDestroy{
 
   myControl = new FormControl();
   options: String[]=[];
   obtenerValores: ProductoModel|any;
   filteredOptions: Observable<String[]>|any;
+  productoSubscription: Subscription|any;
   constructor(private serviceItemProducto: ServiceItemProducto, private serviceProducto: ServiceProducto, @Inject(MAT_DIALOG_DATA) private data: String, private matdialogRef: MatDialogRef<BuscarNombreComponent>){}
+  ngOnDestroy(): void {
+    if(this.productoSubscription!=undefined){
+      this.productoSubscription.unsubscribe();
+    }
+  }
   ngOnInit(): void {
-
+    if(this.productoSubscription!=undefined){
+      this.productoSubscription.unsubscribe();
+    }
     this.serviceProducto.obtenerbyName();
-    this.serviceProducto.listenerDatosProductoNombre().subscribe(datos=>{
+    this.productoSubscription = this.serviceProducto.listenerDatosProductoNombre().subscribe(datos=>{
       this.options=datos;
       this.filteredOptions = this.myControl.valueChanges.pipe(
         startWith(''),

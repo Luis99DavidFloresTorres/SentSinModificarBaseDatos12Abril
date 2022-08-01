@@ -33,7 +33,7 @@
   <button mat-icon-button (click)="buscarProveedores()"><mat-icon>search</mat-icon></button>
 </form >
 
-<div  *ngIf="activar">
+<div >
   <div fxLayoutAlign="center center">
     <mat-form-field  color= "primary" fxFlex="30%">
       <input matInput id="input" placeholder="buscador" (keyup)="hacerFiltro($any($event.target).value)">
@@ -89,3 +89,7 @@
     </mat-table>
   </div>
 </div>
+<mat-form-field fxLayoutAlign="end">
+  <mat-label>Total</mat-label>
+  <input matInput [formControl]="totalCosto">
+</mat-form-field>

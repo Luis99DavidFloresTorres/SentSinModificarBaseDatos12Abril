@@ -16,6 +16,9 @@ public class itemProducto implements Serializable {
     private String serial;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private Double costo;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Double monto;
+
    // @JsonInclude(JsonInclude.Include.NON_NULL)
     private Integer cantidad;
     @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -107,18 +110,22 @@ public class itemProducto implements Serializable {
         this.nombre = nombreP;
         this.costoTotal = this.salidas*this.costo;
     }
-    public itemProducto(Long id, Integer cantidad, producto producto, transactionProduct transactionProduct, String codigo, Long producto_id, String nombre, String nombreUnidad, String depositoNombre){
+    public itemProducto(Long id,Date fecha, Integer cantidad, producto producto,Integer nrodoc, Integer oper, String detalle, String codigo, Long producto_id, String nombre, String nombreUnidad, String depositoNombre){
         this.id= id;
         this.cantidad= cantidad;
         this.nombre=nombre;
         this.producto = producto;
-        this.transproducto= transactionProduct;
+        //this.transproducto= transactionProduct;
         this.codigo = codigo;
         this.producto_id = producto_id;
         this.unidad= nombreUnidad;
         this.depositoNombre = depositoNombre;
+        this.fechaact = fecha;
+        this.nrodoc = nrodoc;
+        this.ope = oper;
+        this.observaciones =detalle;
     }
-    public itemProducto(Long id, Integer cantidad, producto producto, transactionProduct transactionProduct, String codigo, Long producto_id, String nombre, String nombreUnidad){
+    public itemProducto(Long id, Integer cantidad, producto producto, transactionProduct transactionProduct, String codigo, Long producto_id, String nombre, String nombreUnidad, Double costo){
         this.id= id;
         this.cantidad= cantidad;
         this.nombre=nombre;
@@ -127,6 +134,8 @@ public class itemProducto implements Serializable {
         this.codigo = codigo;
         this.producto_id = producto_id;
         this.unidad= nombreUnidad;
+        this.costo = costo;
+       // this.costoTotal = costo*cantidad;
     }
     public itemProducto(Long id, Date fecha, Integer nroDoc, Integer oper, String observaciones, String serial, Double costoU, Integer cantidad, producto producto1,  transactionProduct transproducto1, String codigo){
         this.id = id;
@@ -161,6 +170,25 @@ public class itemProducto implements Serializable {
         this.costoTotal=0.0;
         this.ingresos=0.0;
         this.nombre = nombre;
+    }
+    public itemProducto(Long id, Date fecha, Integer nroDoc, Integer oper, String observaciones, String serial, Double costoU, Integer cantidad, producto pr){
+        this.id = id;
+        this.fechaact = fecha;
+        this.producto = pr;
+        this.nrodoc=nroDoc;
+        this.ope= oper;
+        this.serial= serial;
+        this.observaciones = observaciones;
+        this.costo=costoU;
+        this.cantidad = cantidad;
+        this.producto_id=producto.getId();
+        this.saldo=0.0;
+        //  this.producto= producto1;
+        this.codigo=producto.getCodigo();
+        //  this.transproducto = transproducto1;
+        this.costoTotal=0.0;
+        this.ingresos=0.0;
+        this.nombre = producto.getNombre();
     }
     public itemProducto(Long id, Date fecha, Integer nroDoc, Integer oper, String observaciones, String serial, Double costoU, Integer cantidad, Long prod_Id, String codigo, String nombre, String depositoNombre){
         this.id = id;
@@ -283,14 +311,22 @@ public class itemProducto implements Serializable {
         this.cantidad = cantidad;
         this.costo = costo;
     }
-    public itemProducto(transactionProduct transactionProduct, String nombre, Integer cantidad, Double costo, Double precioProducto){
+    public itemProducto(transactionProduct transactionProduct, producto producto, Integer cantidad, Double costo, Double precioProducto){
         this.transproducto = transactionProduct;
         this.costoTotal=costo * cantidad;
-        this.productoNombre = nombre;
+        this.productoNombre = producto.getNombre();
+        this.serial = producto.getSerial();
         this.cantidad = cantidad;
         this.costo = costo;
         this.precioProducto= precioProducto;
     }
-
+    public itemProducto(transactionProduct tr, producto pr, Integer cantidad, Double costo, String serial){
+        this.transproducto = tr;
+        this.producto = pr;
+        this.cantidad = cantidad;
+        this.costo = costo;
+        this.monto = costo*cantidad;
+        this.serial=serial;
+    }
 
 }

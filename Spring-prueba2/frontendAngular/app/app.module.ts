@@ -95,7 +95,7 @@ import { PipeNivelPipe } from './contenido/barra/cotizacion-cliente/pipe-nivel.p
 import { ArbolProyectosComponent } from './contenido/barra/cotizacion-cliente/arbol-proyectos/arbol-proyectos.component';
 import { PipePipe } from './contenido/barra/cotizacion-cliente/items-cotizcliente/pipe.pipe';
 import { Entre2fechasComponent } from './contenido/barra/item-producto/entre2fechas/entre2fechas.component';
-import { HashLocationStrategy, LocationStrategy } from '@angular/common';
+import { DatePipe, HashLocationStrategy, LocationStrategy } from '@angular/common';
 import { Entre2fechasDepositoComponent } from './contenido/barra/item-deposito/entre2fechas-deposito/entre2fechas-deposito.component';
 import { FormularioGestionclienteComponent } from './contenido/barra/cliente/gestion-cliente/formulario-gestioncliente/formulario-gestioncliente.component';
 import { BuscarClientesComponent } from './contenido/barra/cliente/buscar-clientes/buscar-clientes.component';
@@ -109,6 +109,54 @@ import {MayordeProductosCompraProvComponent} from './contenido/barra/proveedores
 import { ProductosCotizacionProvComponent } from './contenido/barra/proveedores/productos-cotizacion-prov/productos-cotizacion-prov.component';
 import { VentasporClienteComponent } from './contenido/barra/cliente/ventaspor-cliente/ventaspor-cliente.component';
 import { EntregaProductoporClienteComponent } from './contenido/barra/cliente/entrega-productopor-cliente/entrega-productopor-cliente.component';
+import { AdjudicarProyectoComponent } from './contenido/barra/proyecto/adjudicar-proyecto/adjudicar-proyecto.component';
+import { BuscarProyectoComponent } from './contenido/barra/proyecto/buscar-proyecto/buscar-proyecto.component';
+import { EstadoProyectosComponent } from './contenido/barra/proyecto/estado-proyectos/estado-proyectos.component';
+import { EntregaProductoProyectoComponent } from './contenido/barra/proyecto/entrega-producto-proyecto/entrega-producto-proyecto.component';
+import { VaciosPipe } from './contenido/barra/proyecto/vacios.pipe';
+import { GestionHerramientasProyectoComponent } from './contenido/barra/proyecto/gestion-herramientas-proyecto/gestion-herramientas-proyecto.component';
+import { FechasproductoNotaventaComponent } from './contenido/barra/notaventa/fechasproducto-notaventa/fechasproducto-notaventa.component';
+import { EntreFechasComponent } from './contenido/barra/item-proyecto/entre-fechas/entre-fechas.component';
+import { BuscarHerramientaComponent } from './contenido/barra/proyecto/buscar-herramienta/buscar-herramienta.component';
+import { ResultadoPresumibleProyectoComponent } from './contenido/barra/proyecto/resultado-presumible-proyecto/resultado-presumible-proyecto.component';
+import { SeguimientporUsuarioComponent } from './contenido/barra/proyecto/seguimientpor-usuario/seguimientpor-usuario.component';
+import { CobroProyectoComponent } from './contenido/barra/proyecto/cobro-proyecto/cobro-proyecto.component';
+import { DevolucionHerramientaComponent } from './contenido/barra/proyecto/devolucion-herramienta/devolucion-herramienta.component';
+import { BuscarNotaasignaComponent } from './contenido/barra/proyecto/buscar-notaasigna/buscar-notaasigna.component';
+import { GestionProyectoComponent } from './contenido/barra/proyecto/gestion-proyecto/gestion-proyecto.component';
+import { AsignacionHerramientaComponent } from './contenido/barra/proyecto/asignacion-herramienta/asignacion-herramienta.component';
+import {MayordeOrdencompras2Component} from './contenido/barra/proveedores/mayorde-ordencompras2/mayorde-ordencompras2.component';
+import { SolicitudPresupuestoProyectoComponent } from './contenido/barra/proyecto/solicitud-presupuesto-proyecto/solicitud-presupuesto-proyecto.component';
+import { ProyectoComponent } from './contenido/barra/proyecto/proyecto.component';
+import { BuscarnotasolicitudComponent } from './contenido/barra/proyecto/buscarnotasolicitud/buscarnotasolicitud.component';
+import { DescargogastosComponent } from './contenido/barra/proyecto/descargogastos/descargogastos.component';
+import { BuscarDescargoGastoComponent } from './contenido/barra/proyecto/buscar-descargo-gasto/buscar-descargo-gasto.component';
+import { InformeVentasComponent } from './contenido/barra/informe/informedeventas/informe-ventas/informe-ventas.component';
+import { InformeVentasPorvendedorComponent } from './contenido/barra/informe/informedeventas/informe-ventas-porvendedor/informe-ventas-porvendedor.component';
+import { InformeComisionesPorventaComponent } from './contenido/barra/informe/informedeventas/informe-comisiones-porventa/informe-comisiones-porventa.component';
+import { InformeVentasCotizacionesComponent } from './contenido/barra/informe/informedeventas/informe-ventas-cotizaciones/informe-ventas-cotizaciones.component';
+import { InformeVentasDeproductosComponent } from './contenido/barra/informe/informedeventas/informe-ventas-deproductos/informe-ventas-deproductos.component';
+import { InformeCotizacionesComponent } from './contenido/barra/informe/cotizaciones-alcliente/informe-cotizaciones/informe-cotizaciones.component';
+import { CotizacionesDeproductoComponent } from './contenido/barra/informe/cotizaciones-alcliente/cotizaciones-deproducto/cotizaciones-deproducto.component';
+import { EntradasSalidasProductoComponent } from './contenido/barra/informe/informe-de-almacenes/entradas-salidas-producto/entradas-salidas-producto.component';
+import { EntradaProductovaloradoComponent } from './contenido/barra/informe/informe-de-almacenes/entrada-productovalorado/entrada-productovalorado.component';
+import { SalidaProductovaloradoComponent } from './contenido/barra/informe/informe-de-almacenes/salida-productovalorado/salida-productovalorado.component';
+import { UtilidadSalidadeproductosComponent } from './contenido/barra/informe/informe-de-almacenes/utilidad-salidadeproductos/utilidad-salidadeproductos.component';
+import { InformeDegarantiasComponent } from './contenido/barra/informe/informe-de-almacenes/informe-degarantias/informe-degarantias.component';
+import { ListaDeproductosSerialesComponent } from './contenido/barra/informe/informe-de-almacenes/lista-deproductos-seriales/lista-deproductos-seriales.component';
+import { InformeOrdenesCompraComponent } from './contenido/barra/informe/ordenes-cotizacionoes-proveedor/informe-ordenes-compra/informe-ordenes-compra.component';
+import { InformeCotizacionesProveedorComponent } from './contenido/barra/informe/ordenes-cotizacionoes-proveedor/informe-cotizaciones-proveedor/informe-cotizaciones-proveedor.component';
+import { InformeProyectoCotizacionesProductoComponent } from './contenido/barra/informe/informe-proyectos/informe-proyecto-cotizaciones-producto/informe-proyecto-cotizaciones-producto.component';
+import { InformeSolicitudPresupuestoComponent } from './contenido/barra/informe/informe-proyectos/informe-solicitud-presupuesto/informe-solicitud-presupuesto.component';
+import { InformeSolicitudPresupuestoResponsableComponent } from './contenido/barra/informe/informe-proyectos/informe-solicitud-presupuesto-responsable/informe-solicitud-presupuesto-responsable.component';
+import { InformeSolicitudDescargoResponsableComponent } from './contenido/barra/informe/informe-proyectos/informe-solicitud-descargo-responsable/informe-solicitud-descargo-responsable.component';
+import { FacturaPipePipe } from './contenido/barra/informe/informe-de-almacenes/factura-pipe.pipe';
+import { EntregaProductoPorFechaComponent } from './contenido/barra/proyecto/entrega-producto-por-fecha/entrega-producto-por-fecha.component';
+import { Entre2fechasproductoComponent } from './contenido/barra/item-producto/entre2fechasproducto/entre2fechasproducto.component';
+import { BuscarProductosComponent } from './contenido/barra/item-producto/buscar-productos/buscar-productos.component';
+import { Entre2fechasproductodepositoComponent } from './contenido/barra/item-deposito/entre2fechasproductodeposito/entre2fechasproductodeposito.component';
+import { PipeProyectoPipe } from './contenido/barra/pipe-proyecto.pipe';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -196,8 +244,53 @@ import { EntregaProductoporClienteComponent } from './contenido/barra/cliente/en
     ProductosCotizacionProvComponent,
     VentasporClienteComponent,
     EntregaProductoporClienteComponent,
-
-
+    AdjudicarProyectoComponent,
+    BuscarProyectoComponent,
+    EstadoProyectosComponent,
+    EntregaProductoProyectoComponent,
+    VaciosPipe,
+    GestionHerramientasProyectoComponent,
+    FechasproductoNotaventaComponent,
+    EntreFechasComponent,
+    BuscarHerramientaComponent,
+    ResultadoPresumibleProyectoComponent,
+    SeguimientporUsuarioComponent,
+    CobroProyectoComponent,
+    DevolucionHerramientaComponent,
+    BuscarNotaasignaComponent,
+    GestionProyectoComponent,
+    AsignacionHerramientaComponent,
+    MayordeOrdencompras2Component,
+    SolicitudPresupuestoProyectoComponent,
+    ProyectoComponent,
+    BuscarnotasolicitudComponent,
+    DescargogastosComponent,
+    BuscarDescargoGastoComponent,
+    InformeVentasComponent,
+    InformeVentasPorvendedorComponent,
+    InformeComisionesPorventaComponent,
+    InformeVentasCotizacionesComponent,
+    InformeVentasDeproductosComponent,
+    InformeCotizacionesComponent,
+    CotizacionesDeproductoComponent,
+    EntradasSalidasProductoComponent,
+    EntradaProductovaloradoComponent,
+    SalidaProductovaloradoComponent,
+    UtilidadSalidadeproductosComponent,
+    InformeDegarantiasComponent,
+    ListaDeproductosSerialesComponent,
+    InformeOrdenesCompraComponent,
+    InformeCotizacionesProveedorComponent,
+    InformeProyectoCotizacionesProductoComponent,
+    InformeSolicitudPresupuestoComponent,
+    InformeSolicitudPresupuestoResponsableComponent,
+    InformeSolicitudDescargoResponsableComponent,
+    FacturaPipePipe,
+    EntregaProductoPorFechaComponent,
+    Entre2fechasproductoComponent,
+    BuscarProductosComponent,
+    Entre2fechasproductodepositoComponent,
+    PipeProyectoPipe
   ],
   imports: [
     BrowserModule,
@@ -216,7 +309,7 @@ import { EntregaProductoporClienteComponent } from './contenido/barra/cliente/en
   ],
   providers: [
     {provide:LocationStrategy,useClass:HashLocationStrategy},
-    ServiceZona,ServiceProducto, ServiceCiudad, ServiceDeposito, ServicePais, ServiceRubro, ServiceTipoCliente, ServiceTipoGasto, ServiceItemProducto, ServiceNivelUsuario],
+    ServiceZona,ServiceProducto, ServiceCiudad, ServiceDeposito, ServicePais, ServiceRubro, ServiceTipoCliente, ServiceTipoGasto, ServiceItemProducto, ServiceNivelUsuario, DatePipe],
   bootstrap: [AppComponent],
   entryComponents:[ PaisInsertarComponent,DepositoInsertarComponent,RubrosInsertarComponent,CiudadesInsertarComponent,TiposClienteInsertarComponent,TiposGastoInsertarComponent,UnidadInsertarComponent,ZonasInsertarComponent,MostrarFormProductoComponent, dateFindComponent, BuscarNombreComponent, ItemProductoComponent]
 })

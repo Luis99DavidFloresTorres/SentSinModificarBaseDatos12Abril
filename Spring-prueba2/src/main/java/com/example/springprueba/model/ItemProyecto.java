@@ -19,6 +19,7 @@ public class ItemProyecto implements Serializable {
     private Double costocompra;
 
     private Double precioventa;//venta lo que vendes y compra lo que compras
+    private Double entregaanterior;
     private Integer cantidadven;
 
     private Boolean compracf;

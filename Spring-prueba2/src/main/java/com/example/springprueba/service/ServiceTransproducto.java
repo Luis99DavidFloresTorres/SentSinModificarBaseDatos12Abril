@@ -1,8 +1,10 @@
 package com.example.springprueba.service;
 
 import com.example.springprueba.exception.ExceptionGeneral;
+import com.example.springprueba.model.itemProducto;
 import com.example.springprueba.model.producto;
 import com.example.springprueba.model.transactionProduct;
+import com.example.springprueba.repo.RepoItemProducto;
 import com.example.springprueba.repo.RepoProducto;
 import com.example.springprueba.repo.RepoTransproducto;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,9 +17,11 @@ import java.util.List;
 @Service
 public class ServiceTransproducto {
     private final RepoTransproducto repo;
+    private final RepoItemProducto repoItemProducto;
     @Autowired
-    public ServiceTransproducto(RepoTransproducto repoI){
+    public ServiceTransproducto(RepoTransproducto repoI, RepoItemProducto repoItemProducto) {
         repo = repoI;
+        this.repoItemProducto = repoItemProducto;
     }
     public transactionProduct addProducto(transactionProduct transactionProductp){
 
@@ -44,5 +48,13 @@ public class ServiceTransproducto {
     }
     public List<transactionProduct> salidas(int cantidadRevisar){
         return repo.findByOperGreaterThanEqual(321, PageRequest.of(0,cantidadRevisar, Sort.by(Sort.Direction.DESC,"nrodoc")));
+    }
+    public Double costoTotal(transactionProduct tr){
+        List<itemProducto> listItems = repoItemProducto.findByTransproducto(tr);
+        double montoTotal = 0.0;
+        for(itemProducto it : listItems){
+            montoTotal += it.getCosto() * it.getCantidad();
+        }
+        return montoTotal;
     }
 }

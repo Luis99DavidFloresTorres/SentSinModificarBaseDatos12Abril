@@ -1,6 +1,7 @@
 package com.example.springprueba.functions;
 
 import com.example.springprueba.model.itemProducto;
+import com.example.springprueba.model.producto;
 import com.example.springprueba.service.ServiceItemProducto;
 import com.example.springprueba.service.ServiceProducto;
 import org.springframework.stereotype.Service;
@@ -20,9 +21,17 @@ public class DepositoModules extends depositoAbstractOperations{
         List<itemProducto> resultado = this.mayorSalidasFecha(itemProductoList,fecha, depositoNombre);
         return resultado;
     }
-    public List<itemProducto> periodoEntre2Fechas(List<itemProducto> itemProductosP, Date fecha,Date fecha2, String depositoNombre){
+    public List<itemProducto> periodoEntre2Fechas(List<itemProducto> itemProductosP, Date fecha,Date fecha2){
 
-        return this.restrictProductoIdDatesEntre2Fechas(itemProductosP, fecha, fecha2, depositoNombre);
+        return this.restrictProductoIdDatesEntre2Fechas(itemProductosP, fecha, fecha2);
+    }
+    public List<itemProducto> periodoEntre2FechasProducto(List<itemProducto> itemProductosP, Date fecha,Date fecha2, producto producto, String depositoNombre){
+
+        return this.restrictProductoIdDatesEntre2FechasProductos(itemProductosP, fecha, fecha2, depositoNombre,producto);
+    }
+    public List<itemProducto> kardexProductoEntre2Fechas(List<itemProducto> itemProductosP, Date fecha,Date fecha2){
+        List<itemProducto> it = this.kardexProductoEntre2F(itemProductosP, fecha, fecha2);
+        return it;
     }
     public List<itemProducto> depositoMayorIngresosFC(List<itemProducto> itemProductoList, Date fecha, String depositoNombre){
         return this.mayorIngresosFecha(itemProductoList,fecha, depositoNombre);

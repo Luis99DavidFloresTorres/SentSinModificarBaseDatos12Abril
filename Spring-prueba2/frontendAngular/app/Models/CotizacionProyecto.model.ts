@@ -20,6 +20,17 @@ export interface ModelCotizacionProyecto{
   observaciones:String;
   responsable:String;
   fecha:Date;
+  fechaini:Date;
+  fechafin:Date;
   ciudad:String;
   nombreCliente:String;
+  contactopre:String;
+  estado:String;
+  fecharet:Date;
+  fechacob:Date;
+  montocob:Number;
+  montoret:Number;
+  alertaporc:Number;
+  fechaact:Date;
+  useract:String;
 }

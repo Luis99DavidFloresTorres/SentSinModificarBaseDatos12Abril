@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Subscription } from 'rxjs';
 import { ServiceDeposito } from 'src/app/services/codificadores/deposito.service';
 import { ServiceItemDeposito } from 'src/app/services/itemDeposito.service';
 
@@ -9,7 +10,7 @@ import { ServiceItemDeposito } from 'src/app/services/itemDeposito.service';
   templateUrl: './entre2fechas-deposito.component.html',
   styleUrls: ['./entre2fechas-deposito.component.css']
 })
-export class Entre2fechasDepositoComponent implements OnInit {
+export class Entre2fechasDepositoComponent implements OnInit, OnDestroy {
   depositos:String[]=[];
   deposito = new FormControl();
   range = new FormGroup({
@@ -17,24 +18,43 @@ export class Entre2fechasDepositoComponent implements OnInit {
     end: new FormControl(),
   });
   depositoElegido:String="";
-  constructor(private serviceItemDeposito:ServiceItemDeposito,  private matDialogRef: MatDialogRef<Entre2fechasDepositoComponent>, private depositoService: ServiceDeposito) { }
+  depositoSubscription:Subscription|any;
+  constructor(private serviceItemDeposito:ServiceItemDeposito,  private matDialogRef: MatDialogRef<Entre2fechasDepositoComponent>, private depositoService: ServiceDeposito, @Inject(MAT_DIALOG_DATA) private data:any) { }
+  ngOnDestroy(): void {
+    if(this.depositoSubscription!=undefined){
+      this.depositoSubscription.unsubscribe();
+    }
+  }
 
   ngOnInit(): void {
 
     this.depositoService.obtenerNombresDepositos();
-    this.depositoService.listenerDatosNombresDepositos().subscribe(datos=>{
+    this.depositoSubscription = this.depositoService.listenerDatosNombresDepositos().subscribe(datos=>{
       this.depositos=datos;
     });
   }
   buscar(){
-    this.serviceItemDeposito.obtenerPorPeriodoEntre2Fechas(this.range.get('start')?.value,this.range.get('end')?.value,this.depositoElegido.toString());
+    if(this.data=='entre2FechasSalidas'){
+      this.serviceItemDeposito.obtenerPorPeriodoEntre2FechasSalidas(this.range.get('start')?.value,this.range.get('end')?.value, this.depositoElegido.toString());
+    }
+    if(this.data=='entre2FechasIngresos'){
+      this.serviceItemDeposito.obtenerPorPeriodoEntre2FechasIngresos(this.range.get('start')?.value,this.range.get('end')?.value, this.depositoElegido.toString());
+    }
+    if(this.data=='entre2FechasKardex'){
+      this.serviceItemDeposito.obtenerPorPeriodoEntre2FechasKardex(this.range.get('start')?.value,this.range.get('end')?.value, this.depositoElegido.toString());
+    }
+
+    if(this.data=='entre2fechasProductoPeriodo'){
+      console.log("entraaa")
+      this.serviceItemDeposito.obtenerPorPeriodoEntre2Fechas(this.range.get('start')?.value,this.range.get('end')?.value,this.depositoElegido.toString());
+    }
+
     var fecha1 = new Date(this.range.get('start')?.value);
     var fecha2 = new Date(this.range.get('end')?.value);
 
     var fecha1Formateada = fecha1.getFullYear()+"-"+(fecha1.getMonth()+1)+"-"+fecha1.getDate()
     var fecha2Formateada = fecha2.getFullYear()+"-"+(fecha2.getMonth()+1)+"-"+fecha2.getDate()
-    console.log(fecha2Formateada);
-    console.log(fecha1Formateada)
+
     var fecha = fecha1Formateada + " Hasta  "+fecha2Formateada
     this.matDialogRef.close(fecha);
   }

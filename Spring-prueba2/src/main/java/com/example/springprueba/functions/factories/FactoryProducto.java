@@ -5,7 +5,9 @@ import com.example.springprueba.functions.operationRestrict;
 import com.example.springprueba.model.ItemCotizProducto;
 import com.example.springprueba.model.cliente;
 import com.example.springprueba.model.itemProducto;
+import com.example.springprueba.model.transactionProduct;
 import com.example.springprueba.repo.RepoItemProducto;
+import com.example.springprueba.repo.RepoTransproducto;
 import com.example.springprueba.service.ServiceItemProducto;
 import org.springframework.stereotype.Service;
 
@@ -20,9 +22,11 @@ public class FactoryProducto extends operationRestrict {
     private ServiceItemProducto serviceItemProducto;
     private ProductsModules productsModules;
     private RepoItemProducto repoItemProducto;
-    public FactoryProducto(ServiceItemProducto serviceItemProducto1, ProductsModules productsModules1, RepoItemProducto repoItemProducto){
+    private RepoTransproducto repoTransproducto;
+    public FactoryProducto(ServiceItemProducto serviceItemProducto1, ProductsModules productsModules1, RepoItemProducto repoItemProducto, RepoTransproducto repoTransproducto){
         this.serviceItemProducto = serviceItemProducto1;
         this.productsModules = productsModules1;
+        this.repoTransproducto= repoTransproducto;
         this.repoItemProducto = repoItemProducto;
     }
     public List<itemProducto> returnMayorIngresos(String consulta, String fecha, String nombre) throws ParseException {
@@ -98,11 +102,17 @@ public class FactoryProducto extends operationRestrict {
             return itemProductoList1;
         }
     }
-    public List<itemProducto> entregaProductosPorCliente(Date fechaInicial, Date fechaFinal, String nombre){
-        List<itemProducto> listaClientes = this.repoItemProducto.findByTransproducto_Cliente_Nombre(nombre);
+    public List<itemProducto> entregaProductosPorCliente(Date fechaInicial, Date fechaFinal, cliente cliente){
+        //System.out.println(cliente);
+        List<transactionProduct> transproducto = repoTransproducto.findByCliente(cliente);
+        List<itemProducto> listaClientes  = new ArrayList<>();
+        for(transactionProduct i : transproducto) {
+            //System.out.println(i.getId());
+            listaClientes.addAll(this.repoItemProducto.findByTransproducto(i));
+        }
         List<itemProducto> listaProductosPorClienteEntregados = null;
         if(listaClientes.size()>0){
-            List<itemProducto> itemcompraEntreFechas = new ArrayList<>();
+            List<itemProducto> itemcompraEntreFechas = new ArrayList<>();// nos quedamos aqui
             for(itemProducto itemProductoFor: listaClientes){
                 Date fechaCompra = itemProductoFor.getTransproducto().getFecha();
                 if(((fechaCompra.after(fechaInicial)) || (fechaInicial.equals(fechaCompra))) && ((fechaCompra.before(fechaFinal)) || (fechaInicial.equals(fechaCompra)))){

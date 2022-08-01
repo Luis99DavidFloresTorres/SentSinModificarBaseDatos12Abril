@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Date;
 import java.util.List;
 
 public interface RepoItemProducto extends JpaRepository<itemProducto, Long> {
@@ -18,14 +19,16 @@ public interface RepoItemProducto extends JpaRepository<itemProducto, Long> {
     List<itemProducto> obtenerItems();
     @Query(value = "SELECT new com.example.springprueba.model.itemProducto(p.codigo, p.nombre,p.unidad.nombre,ip.cantidad, trns.oper,p.salidas, p.ingresos) from itemproducto ip inner join producto p on ip.producto.id = p.id inner join transproducto trns on ip.transproducto.id = trns.id")
     List<itemProducto> findProductoPeriodo();
-    @Query(value = "SELECT new com.example.springprueba.model.itemProducto(ip.id,ip.cantidad,ip.producto , ip.transproducto, p.codigo, p.id,p.nombre,p.unidad.nombre) from itemproducto ip inner join producto p on ip.producto.id = p.id inner join transproducto tr on ip.transproducto.id= tr.id order by p.id asc, tr.fecha asc")//se ordena por id
+    @Query(value = "SELECT new com.example.springprueba.model.itemProducto(ip.id,ip.cantidad,ip.producto , ip.transproducto, p.codigo, p.id,p.nombre,p.unidad.nombre, ip.costo) from itemproducto ip inner join producto p on ip.producto.id = p.id inner join transproducto tr on ip.transproducto.id= tr.id order by p.id asc, tr.fecha asc")//se ordena por id
     List<itemProducto> findByIdProducto();
-    @Query(value = "SELECT new com.example.springprueba.model.itemProducto(ip.id,ip.cantidad,ip.producto , ip.transproducto, p.codigo, p.id,p.nombre,p.unidad.nombre, de.nombre) from itemproducto ip inner join producto p on ip.producto.id = p.id inner join transproducto tr on ip.transproducto.id= tr.id inner join deposito de on tr.deposito.id = de.id where de.nombre=?1 order by p.id asc, tr.fecha asc")//se ordena por id
+    @Query(value = "SELECT new com.example.springprueba.model.itemProducto(ip.id,tr.fecha,ip.cantidad,ip.producto , tr.nrodoc, tr.oper, tr.detalle , p.codigo, p.id,p.nombre,p.unidad.nombre, de.nombre) from itemproducto ip inner join producto p on ip.producto.id = p.id inner join transproducto tr on ip.transproducto.id= tr.id inner join deposito de on tr.deposito.id = de.id where de.nombre=?1 order by p.id asc, tr.fecha asc")//se ordena por id
     List<itemProducto> obtenerProductosPorDepositos(String depositoNombre);
     @Query(value = "SELECT new com.example.springprueba.model.itemProducto(ip.id,tr.fecha, tr.nrodoc, tr.oper, tr.detalle, ip.serial, ip.costo, ip.cantidad,p.id, p.codigo, p.nombre) from itemproducto ip inner join producto p on ip.producto.id = p.id inner join transproducto  tr on ip.transproducto.id = tr.id order by p.id asc, tr.fecha asc")//se ordena por id
     List<itemProducto> kardexProducto();
     @Query(value = "SELECT new com.example.springprueba.model.itemProducto(ip.id,tr.fecha, tr.nrodoc, tr.oper, tr.detalle, ip.serial, ip.costo, ip.cantidad,p.id, p.codigo, p.nombre) from itemproducto ip inner join producto p on ip.producto.id = p.id inner join transproducto  tr on ip.transproducto.id = tr.id where p.nombre=?1 order by tr.fecha asc")//se ordena por id
     List<itemProducto> kardexProductoByName(String nombre);
+    @Query(value = "SELECT new com.example.springprueba.model.itemProducto(ip.id,tr.fecha, tr.nrodoc, tr.oper, tr.detalle, ip.serial, ip.costo, ip.cantidad,p) from itemproducto ip inner join producto p on ip.producto.id = p.id inner join transproducto  tr on ip.transproducto.id = tr.id where p=?1 order by p.id asc, tr.fecha asc")//se ordena por id
+    List<itemProducto> kardexModelProducto(producto producto);
     @Query(value = "SELECT new com.example.springprueba.model.itemProducto(ip.id,tr.proveedor.nombre,tr.fecha, tr.nrodoc, tr.oper,tr.detalle,  ip.cantidad,ip.serial, p.nombre) from itemproducto ip inner join producto p on ip.producto.id = p.id inner join transproducto  tr on ip.transproducto.id = tr.id inner join proveedor prov on tr.proveedor.id = prov.id order by p.id asc")//se ordena por id
     List<itemProducto>  mayorIngresos();
     @Query(value = "SELECT new com.example.springprueba.model.itemProducto(ip.id,tr.fecha, tr.nrodoc,cli.nombre, tr.oper,tr.detalle,  ip.cantidad,ip.serial, p.nombre) from itemproducto ip inner join producto p on ip.producto.id = p.id inner join transproducto  tr on ip.transproducto.id = tr.id inner join cliente cli on tr.cliente.id = cli.id order by p.id asc")//se ordena por id
@@ -50,8 +53,10 @@ public interface RepoItemProducto extends JpaRepository<itemProducto, Long> {
     List<itemProducto> proveedorMayorCompra(@Param("nombreProveedor") String nombreProveedor);
     @Query(value = "SELECT DISTINCT new com.example.springprueba.model.itemProducto(it.serial) FROM itemproducto it")
     List<itemProducto> seriales();
+    @Query(value = "SELECT DISTINCT new com.example.springprueba.model.itemProducto(it.transproducto,it.producto, it.cantidad,it.costo, it.serial) FROM itemproducto it where it.transproducto.fecha <= :fechaHasta and it.transproducto.fecha >= :fechaDesde")
+    List<itemProducto> rangoEntre2Fechas(@Param("fechaDesde") Date fechaDesde, @Param("fechaHasta") Date fechaHasta);
     List<itemProducto> findByTransproducto(transactionProduct trasproducto);
-    @Query(value = "select new com.example.springprueba.model.itemProducto(tr, pr.nombre, it.cantidad, it.costo, pr.precio) from itemproducto it inner join transproducto tr on it.transproducto.id = tr.id inner join producto pr on it.producto.id = pr.id where tr.cliente.nombre= :clienteNombre order by tr.fecha desc ")
+    @Query(value = "select new com.example.springprueba.model.itemProducto(tr, pr, it.cantidad, it.costo, pr.precio) from itemproducto it inner join transproducto tr on it.transproducto.id = tr.id inner join producto pr on it.producto.id = pr.id where tr.cliente.nombre= :clienteNombre order by tr.fecha desc ")
     List<itemProducto> findByTransproducto_Cliente_Nombre(@Param("clienteNombre") String clienteNombre);
 
 }

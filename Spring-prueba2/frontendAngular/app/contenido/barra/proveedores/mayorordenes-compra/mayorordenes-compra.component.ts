@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { DateAdapter } from '@angular/material/core';
 import { MatDialog } from '@angular/material/dialog';
+import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Observable, Subject, Subscription } from 'rxjs';
 import { map, startWith, takeUntil } from 'rxjs/operators';
@@ -25,11 +26,12 @@ export class MayorordenesCompraComponent implements OnInit {
   options:String[] = [];
   sujeto = new Subject();
   formGroup:FormGroup|any;
-  activar=false;
+
   dataSource= new MatTableDataSource<ModelItemOrdenCompra>();
   displayedColumns:String[] = []//"ordencompra.fecha","ordencompra.nrodoc","ordencompra.oper","ordencompra.nrocot","ordencompra.useract","ordencompra.detalle",""
   proveedorModel : ProveedorModel|any;
   proveedoresAll:ProveedorModel[] = []
+  @ViewChild(MatSort) sort: MatSort | any;
   range = new FormGroup({
     start: new FormControl(),
     end: new FormControl(),
@@ -84,15 +86,28 @@ export class MayorordenesCompraComponent implements OnInit {
     var palabra =  this.options.filter(option => option.toLowerCase().includes(filterValue));
     return palabra;
   }
+  ngAfterViewInit(): void {
+    this.dataSource.sort = this.sort;
+    this.dataSource.sortingDataAccessor = this.pathDataAccessor;
+
+  }
+  pathDataAccessor(item: any, path: string): any {
+
+    return path.split('.')
+      .reduce((accumulator: any, key: string) => {
+        return accumulator ? accumulator[key] : undefined;
+      }, item);
+  }
   buscar(){
-    this.activar=true;
+
     if(this.subscriptionOrdenCompra!=undefined){
       this.subscriptionOrdenCompra.unsubscribe();
     }
     this.serviceItemCompra_OrdenCompra.ordenCompra(this.range.get('start')?.value,this.range.get('end')?.value, this.formGroup.get('myControl').value);
     this.subscriptionOrdenCompra = this.serviceItemCompra_OrdenCompra.listenerProveedorOrdenCompra().subscribe(proveedor=>{
       this.dataSource.data = proveedor
-      this.displayedColumns = ['ordencompra.fecha','ordencompra.nrodoc','ordencompra.nrocot','ordencompra.useract','ordencompra.detalle','monto'];
+      console.log(proveedor);
+      this.displayedColumns = ['ordencompra.fecha','ordencompra.nrodoc','ordencompra.oper','ordencompra.nrocot','ordencompra.useract','ordencompra.detalle','monto'];
     })
   }
   buscarProveedores(){
@@ -101,5 +116,27 @@ export class MayorordenesCompraComponent implements OnInit {
   }
   hacerFiltro(filtro: string){
     this.dataSource.filter = filtro;
+    this.dataSource.filterPredicate = (data, filter: string)  => {
+      const accumulator = (currentTerm:any, key:any) => {
+        return this.nestedFilterCheck(currentTerm, data, key);
+      };
+      const dataStr = Object.keys(data).reduce(accumulator, '').toLowerCase();
+      // Transform the filter by converting it to lowercase and removing whitespace.
+      const transformedFilter = filter.trim().toLowerCase();
+      return dataStr.indexOf(transformedFilter) !== -1;
+    };
+  }
+
+  nestedFilterCheck(search:any, data:any, key:any) {
+    if (typeof data[key] === 'object') {
+      for (const k in data[key]) {
+        if (data[key][k] !== null) {
+          search = this.nestedFilterCheck(search, data[key], k);
+        }
+      }
+    } else {
+      search += data[key];
+    }
+    return search;
   }
 }

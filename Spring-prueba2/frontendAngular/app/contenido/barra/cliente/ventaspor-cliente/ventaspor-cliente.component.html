@@ -31,7 +31,7 @@
   </mat-form-field>
   <button mat-icon-button (click)="buscarClientes()"><mat-icon>search</mat-icon></button>
 </form >
-<div  *ngIf="activar">
+<div  >
   <div fxLayoutAlign="center center">
     <mat-form-field  color= "primary" fxFlex="30%">
       <input matInput id="input" placeholder="buscador" (keyup)="hacerFiltro($any($event.target).value)">
@@ -45,25 +45,22 @@
         <mat-header-cell  *matHeaderCellDef mat-sort-header>Id</mat-header-cell>
         <mat-cell *matCellDef="let element">  {{element.id}} </mat-cell>
       </ng-container>
-      <ng-container matColumnDef="transproducto.oper">
-        <mat-header-cell  *matHeaderCellDef mat-sort-header>Tipo Trans</mat-header-cell>
-        <mat-cell *matCellDef="let element">  {{element.transproducto.oper}} </mat-cell>
+      <ng-container matColumnDef="operacion">
+        <mat-header-cell  *matHeaderCellDef mat-sort-header>Operacion/Proyecto</mat-header-cell>
+        <mat-cell *matCellDef="let element">  {{element.operacion}} </mat-cell>
       </ng-container>
-      <ng-container matColumnDef="transproducto.nrodoc">
+      <ng-container matColumnDef="nrodoc">
         <mat-header-cell  *matHeaderCellDef mat-sort-header>Nro documento</mat-header-cell>
-        <mat-cell *matCellDef="let element">  {{element.transproducto.nrodoc}} </mat-cell>
+        <mat-cell *matCellDef="let element">  {{element.nrodoc}} </mat-cell>
       </ng-container>
-      <ng-container matColumnDef="transproducto.fecha">
+      <ng-container matColumnDef="fecha">
         <mat-header-cell  *matHeaderCellDef mat-sort-header>Fecha</mat-header-cell>
-        <mat-cell *matCellDef="let element">  {{element.transproducto.fecha|date:"dd/MM/yyyy"}} </mat-cell>
+        <mat-cell *matCellDef="let element">  {{element.fecha|date:"dd/MM/yyyy"}} </mat-cell>
       </ng-container>
-      <ng-container matColumnDef="transproducto.cliente.nombre">
-        <mat-header-cell  *matHeaderCellDef mat-sort-header>Producto</mat-header-cell>
-        <mat-cell *matCellDef="let element">  {{element.transproducto.cliente.nombre}} </mat-cell>
-      </ng-container>
-      <ng-container matColumnDef="cantidad">
-        <mat-header-cell  *matHeaderCellDef mat-sort-header>Cantidad</mat-header-cell>
-        <mat-cell *matCellDef="let element">  {{element.cantidad}} </mat-cell>
+
+      <ng-container matColumnDef="cliente.nombre">
+        <mat-header-cell  *matHeaderCellDef mat-sort-header>Cliente</mat-header-cell>
+        <mat-cell *matCellDef="let element">  {{element.cliente.nombre}} </mat-cell>
       </ng-container>
       <ng-container matColumnDef="productoNombre">
         <mat-header-cell  *matHeaderCellDef mat-sort-header>Producto</mat-header-cell>
@@ -77,20 +74,25 @@
         <mat-header-cell  *matHeaderCellDef mat-sort-header>Factura</mat-header-cell>
         <mat-cell *matCellDef="let element">  {{element.transproducto.factura}} </mat-cell>
       </ng-container>
-      <ng-container matColumnDef="transproducto.detalle">
-        <mat-header-cell  *matHeaderCellDef mat-sort-header>Detalle</mat-header-cell>
-        <mat-cell *matCellDef="let element">  {{element.transproducto.detalle}} </mat-cell>
+      <ng-container matColumnDef="detalle">
+        <mat-header-cell  *matHeaderCellDef mat-sort-header>Observaciones</mat-header-cell>
+        <mat-cell *matCellDef="let element">  {{element.detalle}} </mat-cell>
       </ng-container>
-      <ng-container matColumnDef="costo">
-        <mat-header-cell  *matHeaderCellDef mat-sort-header>Costo</mat-header-cell>
-        <mat-cell *matCellDef="let element">  {{element.costo}} </mat-cell>
+      <ng-container matColumnDef="proyecto.nota">
+        <mat-header-cell  *matHeaderCellDef mat-sort-header>Nro Fact</mat-header-cell>
+        <mat-cell *matCellDef="let element">  {{element.proyecto.nota}} </mat-cell>
       </ng-container>
-      <ng-container matColumnDef="costoTotal">
-        <mat-header-cell  *matHeaderCellDef mat-sort-header>Costo Total</mat-header-cell>
-        <mat-cell *matCellDef="let element">  {{element.costoTotal}} </mat-cell>
+      <ng-container matColumnDef="total">
+        <mat-header-cell  *matHeaderCellDef mat-sort-header>Monto</mat-header-cell>
+        <mat-cell *matCellDef="let element">  {{element.total}} </mat-cell>
       </ng-container>
       <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
       <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
     </mat-table>
+
   </div>
+  <mat-form-field fxLayoutAlign="center center">
+    <mat-label>Total</mat-label>
+    <input matInput (disabled)="false" [formControl]="total">
+  </mat-form-field>
 </div>

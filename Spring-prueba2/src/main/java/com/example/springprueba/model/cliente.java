@@ -1,6 +1,7 @@
 package com.example.springprueba.model;
 
 import com.example.springprueba.model.codificadores.ciudad;
+import com.example.springprueba.model.codificadores.tipoCliente;
 import com.example.springprueba.model.codificadores.zona;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -24,10 +25,14 @@ public class cliente {
     private String telefono;
     private String codigo;
     private LocalDate fechaact;
+    private String useract;
     @JsonIgnore
     @OneToMany(mappedBy = "cliente")
     @ToString.Exclude
     private List<transactionProduct> transactionProductList;
+    @ManyToOne
+    @JoinColumn(name = "tipocliente_id")
+    private tipoCliente tipocliente;
     @OneToMany(mappedBy = "cliente")
     @JsonIgnore
     @ToString.Exclude

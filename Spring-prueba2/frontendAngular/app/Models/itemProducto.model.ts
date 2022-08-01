@@ -24,5 +24,6 @@ export interface ItemProductoModel{
   nrodoc:Number
   ope:Number;
   saldo:Number
-  invinicial:Number
+  invinicial:Number;
+  precioTotal:Number;
 }

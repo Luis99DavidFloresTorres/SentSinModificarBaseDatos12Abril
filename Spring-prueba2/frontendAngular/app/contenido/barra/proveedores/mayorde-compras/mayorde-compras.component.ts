@@ -1,7 +1,8 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { DateAdapter } from '@angular/material/core';
 import { MatDialog } from '@angular/material/dialog';
+import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Observable, Subject, Subscription } from 'rxjs';
 import { map, startWith, takeUntil } from 'rxjs/operators';
@@ -25,10 +26,13 @@ export class MayordeComprasComponent implements OnInit, OnDestroy{
   options:String[] = [];
   sujeto = new Subject();
   formGroup:FormGroup|any;
-  activar=false;
+  totalSuma = new FormControl();
+
   dataSource= new MatTableDataSource<ItemProductoModel>();
-  displayedColumns:String[] = []
+  displayedColumns:String[]  = ['transproducto.fecha','transproducto.nrodoc','transproducto.oper','transproducto.factura','transproducto.detalle','costoTotal'];
   proveedorModel : ProveedorModel|any;
+
+  @ViewChild(MatSort) sort: MatSort | any;
   proveedoresAll:ProveedorModel[] = []
   range = new FormGroup({
     start: new FormControl(),
@@ -54,6 +58,7 @@ export class MayordeComprasComponent implements OnInit, OnDestroy{
   }
 
   ngOnInit(): void {
+
     this.formGroup= this.formBuilder.group({
 
       myControl:['',[Validators.required]]
@@ -78,21 +83,40 @@ export class MayordeComprasComponent implements OnInit, OnDestroy{
       this.formGroup.get('myControl').setValue(data.nombre);
     })
   }
+  pathDataAccessor(item: any, path: string): any {
+
+    return path.split('.')
+      .reduce((accumulator: any, key: string) => {
+        return accumulator ? accumulator[key] : undefined;
+      }, item);
+  }
+  ngAfterViewInit(): void {
+    this.dataSource.sort = this.sort;
+    this.dataSource.sortingDataAccessor = this.pathDataAccessor;
+
+  }
   private _filter(value: String): String[] {
     const filterValue = value.toLowerCase();
     var palabra =  this.options.filter(option => option.toLowerCase().includes(filterValue));
     return palabra;
   }
   buscar(){
-    this.activar=true;
+    //this.activar=true;
     if(this.subscriptionMayordeCompras!=undefined){
       this.subscriptionMayordeCompras.unsubscribe();
     }
     this.serviceItemCompra_OrdenCompra.mayorCompra(this.range.get('start')?.value,this.range.get('end')?.value, this.formGroup.get('myControl').value);
-    this.subscriptionMayordeCompras= this.serviceItemCompra_OrdenCompra.listenerMayorCompra().subscribe(proveedor=>{
+    this.subscriptionMayordeCompras= this.serviceItemCompra_OrdenCompra.listenerMayorCompra().subscribe((proveedor:any[])=>{
       console.log(proveedor);
       this.dataSource.data = proveedor
-      this.displayedColumns = ['transproducto.fecha','transproducto.nrodoc','transproducto.oper','transproducto.detalle','costoTotal'];
+
+      this.displayedColumns = ['transproducto.fecha','transproducto.nrodoc','transproducto.oper','transproducto.notaventa','transproducto.detalle','costoTotal'];
+      var suma:Number = 0;
+
+      proveedor.forEach(data=>{
+        suma+=data.costoTotal.valueOf();
+      })
+      this.totalSuma.setValue(suma);
     })
   }
   buscarProveedores(){
@@ -101,5 +125,27 @@ export class MayordeComprasComponent implements OnInit, OnDestroy{
   }
   hacerFiltro(filtro: string){
     this.dataSource.filter = filtro;
+    this.dataSource.filterPredicate = (data, filter: string)  => {
+      const accumulator = (currentTerm:any, key:any) => {
+        return this.nestedFilterCheck(currentTerm, data, key);
+      };
+      const dataStr = Object.keys(data).reduce(accumulator, '').toLowerCase();
+      // Transform the filter by converting it to lowercase and removing whitespace.
+      const transformedFilter = filter.trim().toLowerCase();
+      return dataStr.indexOf(transformedFilter) !== -1;
+    };
+  }
+
+  nestedFilterCheck(search:any, data:any, key:any) {
+    if (typeof data[key] === 'object') {
+      for (const k in data[key]) {
+        if (data[key][k] !== null) {
+          search = this.nestedFilterCheck(search, data[key], k);
+        }
+      }
+    } else {
+      search += data[key];
+    }
+    return search;
   }
 }

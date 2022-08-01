@@ -34,4 +34,5 @@ export interface ProductoModel{
   rutaPortada:String;
   codigoProducto:CodigoProducto;
   serial:String;
+  utilidadInforme:Number;
 }

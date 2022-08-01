@@ -1,6 +1,8 @@
 package com.example.springprueba.repo;
 
+import com.example.springprueba.model.cliente;
 import com.example.springprueba.model.codificadores.unidades;
+import com.example.springprueba.model.proyecto;
 import com.example.springprueba.model.transactionProduct;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -8,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 
 public interface RepoTransproducto extends JpaRepository<transactionProduct, Long> {
@@ -26,4 +29,9 @@ public interface RepoTransproducto extends JpaRepository<transactionProduct, Lon
     @Transactional
     void deleteByNrodocAndOper(Integer nroDoc, Integer oper);
     transactionProduct findByNrodocAndOper(Integer nrodoc, Integer oper);
+    List<transactionProduct> findByProyecto(proyecto proyecto);
+    List<transactionProduct> findByCliente(cliente cliente);
+    List<transactionProduct> findByFechaBetweenAndOperAfter(Date fechaInicio, Date fechaFinal, Integer oper);
+    List<transactionProduct> findByFechaBetweenAndOperBefore(Date fechaInicio, Date fechaFinal, Integer oper);
+    List<transactionProduct> findByFechaBetween(Date fechaStart, Date fechaEnd, Pageable pageable);
 }

@@ -1,13 +1,13 @@
 package com.example.springprueba.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
+import lombok.ToString;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.Date;
+import java.util.List;
 
 @Entity(name="tipousuario")
 @Data
@@ -18,4 +18,7 @@ public class tipoUsuario {
     private String nombre;
     private String detalle;
     private LocalDate fechaact;
+   /* @JsonIgnore
+    @OneToMany(mappedBy = "cliente")
+    private List<cliente> clienteList;*/
 }

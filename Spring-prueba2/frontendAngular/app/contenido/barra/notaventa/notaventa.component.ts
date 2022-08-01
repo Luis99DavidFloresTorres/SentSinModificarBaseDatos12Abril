@@ -42,7 +42,15 @@ export class NotaventaComponent implements OnInit, OnDestroy {
 
   }
   ngOnInit(): void {
-
+    if(this.subscribNotaVenta!=undefined){
+      this.subscribNotaVenta.unsubscribe();
+    }
+    if(this.subscribItemAgregado!=undefined){
+      this.subscribItemAgregado.unsubscribe();
+    }
+    if(this.subscribNotaVenta!=undefined){
+      this.subscribNotaVenta.unsubscribe();
+    }
     this.subscribProducto=this.subjectProducto.subscribe(datos=>{
       this.subscribNotaVenta=this.subjectNotaVenta.subscribe(notaventa=>{
         var contador = 0;

@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { DateAdapter } from '@angular/material/core';
 import { MatDialog } from '@angular/material/dialog';
+import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Observable, Subject, Subscription } from 'rxjs';
 import { map, startWith, takeUntil } from 'rxjs/operators';
@@ -25,10 +26,12 @@ export class MayordeProductosCompraProvComponent implements OnInit {
   options:String[] = [];
   sujeto = new Subject();
   formGroup:FormGroup|any;
-  activar=false;
+  totalCosto = new FormControl();
+  totalCostoTotal = new FormControl();
   dataSource= new MatTableDataSource<ItemProductoModel>();
-  displayedColumns:String[] = []
+  displayedColumns:String[] = ['transproducto.fecha','transproducto.nrodoc','transproducto.oper','transproducto.notaventa','producto.nombre','cantidad','costo','costoTotal']
   proveedorModel : ProveedorModel|any;
+  @ViewChild(MatSort) sort: MatSort | any;
   proveedoresAll:ProveedorModel[] = []
   range = new FormGroup({
     start: new FormControl(),
@@ -73,25 +76,48 @@ export class MayordeProductosCompraProvComponent implements OnInit {
       );
       this.options = proveedoresNombre;
     })
-    this.subscriptionProveedor = this.serviceProveedor.listenerProductoItemOrdenCompra().subscribe(data=>{
+    this.subscriptionProveedor = this.serviceProveedor.listenerProductoOrdenCompra().subscribe(data=>{
       this.proveedorModel = data;
       this.formGroup.get('myControl').setValue(data.nombre);
     })
+  }
+  pathDataAccessor(item: any, path: string): any {
+
+    return path.split('.')
+      .reduce((accumulator: any, key: string) => {
+        return accumulator ? accumulator[key] : undefined;
+      }, item);
+  }
+  ngAfterViewInit(): void {
+    this.dataSource.sort = this.sort;
+    this.dataSource.sortingDataAccessor = this.pathDataAccessor;
+
   }
   private _filter(value: String): String[] {
     const filterValue = value.toLowerCase();
     var palabra =  this.options.filter(option => option.toLowerCase().includes(filterValue));
     return palabra;
   }
+
+
   buscar(){
-    this.activar=true;
     if(this.subscriptionMayorProductoCompras!=undefined){
       this.subscriptionMayorProductoCompras.unsubscribe();
     }
     this.serviceItemCompra_OrdenCompra.mayorProductoCompra(this.range.get('start')?.value,this.range.get('end')?.value, this.formGroup.get('myControl').value);
-    this.subscriptionMayorProductoCompras= this.serviceItemCompra_OrdenCompra.listenerMayorProductoCompra().subscribe((mayorProductosCompra:any)=>{
+    this.subscriptionMayorProductoCompras= this.serviceItemCompra_OrdenCompra.listenerMayorProductoCompra().subscribe((mayorProductosCompra:any[])=>{
       this.dataSource.data = mayorProductosCompra
-      this.displayedColumns = ['transproducto.fecha','transproducto.nrodoc','transproducto.oper','transproducto.factura','producto.nombre','cantidad','costo','costoTotal'];
+      this.displayedColumns = ['transproducto.fecha','transproducto.nrodoc','transproducto.oper','transproducto.notaventa','producto.nombre','cantidad','costo','costoTotal'];
+      var suma:number = 0;
+      var sumaCostoTotal:number = 0;
+      console.log(mayorProductosCompra);
+      mayorProductosCompra.forEach(d=>{
+
+        suma+=d.costo.valueOf();
+        sumaCostoTotal +=d.costoTotal.valueOf();
+      })
+      this.totalCostoTotal.setValue(sumaCostoTotal);
+      this.totalCosto.setValue(suma);
     })
   }
   buscarProveedores(){
@@ -100,5 +126,27 @@ export class MayordeProductosCompraProvComponent implements OnInit {
   }
   hacerFiltro(filtro: string){
     this.dataSource.filter = filtro;
+    this.dataSource.filterPredicate = (data, filter: string)  => {
+      const accumulator = (currentTerm:any, key:any) => {
+        return this.nestedFilterCheck(currentTerm, data, key);
+      };
+      const dataStr = Object.keys(data).reduce(accumulator, '').toLowerCase();
+      // Transform the filter by converting it to lowercase and removing whitespace.
+      const transformedFilter = filter.trim().toLowerCase();
+      return dataStr.indexOf(transformedFilter) !== -1;
+    };
+  }
+
+  nestedFilterCheck(search:any, data:any, key:any) {
+    if (typeof data[key] === 'object') {
+      for (const k in data[key]) {
+        if (data[key][k] !== null) {
+          search = this.nestedFilterCheck(search, data[key], k);
+        }
+      }
+    } else {
+      search += data[key];
+    }
+    return search;
   }
 }

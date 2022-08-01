@@ -87,6 +87,9 @@ export class ItemsNotaVentaComponent implements OnInit {
   }
   ngOnInit(): void {
     this.nuevo=true
+    if(this.subscriber!=undefined){
+      this.subscriber.unsubscribe();
+    }
     this.serviceProducto.obtenerbyName();
     this.subscriber= this.serviceProducto.listenerDatosProductoNombre().subscribe(datos=>{
       this.options=datos;
@@ -194,7 +197,6 @@ export class ItemsNotaVentaComponent implements OnInit {
     for(var i=0; i<this.tablaDatos.length;i++){
 
       if(this.tablaDatos[i].producto.id==id){
-        console.log(this.tablaDatos);
         this.tablaDatos = this.tablaDatos.filter((data:ModelNotaventa)=> data !=this.tablaDatos[i])
       }
     }

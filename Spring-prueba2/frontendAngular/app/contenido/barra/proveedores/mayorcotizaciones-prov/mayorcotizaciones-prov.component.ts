@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { DateAdapter } from '@angular/material/core';
 import { MatDialog } from '@angular/material/dialog';
+import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Observable, Subject, Subscription } from 'rxjs';
 import { map, startWith, takeUntil } from 'rxjs/operators';
@@ -24,9 +25,9 @@ export class MayorcotizacionesProvComponent implements OnInit {
   subscriptionMayorCotizaciones:Subscription|any;
   filteredOptions :Observable<string[]>|any;
   options:String[] = [];
+  @ViewChild(MatSort) sort: MatSort | any;
   sujeto = new Subject();
   formGroup:FormGroup|any;
-  activar=false;
   dataSource= new MatTableDataSource<CotizProductoModel>();
   displayedColumns:String[] = []
   proveedorModel : ProveedorModel|any;
@@ -53,11 +54,22 @@ export class MayorcotizacionesProvComponent implements OnInit {
       this.subscriptionMayorCotizaciones.unsubscribe();
     }
   }
+  pathDataAccessor(item: any, path: string): any {
 
+    return path.split('.')
+      .reduce((accumulator: any, key: string) => {
+        return accumulator ? accumulator[key] : undefined;
+      }, item);
+  }
+  ngAfterViewInit(): void {
+    this.dataSource.sort = this.sort;
+    this.dataSource.sortingDataAccessor = this.pathDataAccessor;
+
+  }
   ngOnInit(): void {
     this.formGroup= this.formBuilder.group({
 
-      myControl:['',[Validators.required]]
+      myControl:[{value:'', disabled:true},[Validators.required]]
     })
 
     this.serviceProveedor.allProveedores();
@@ -85,14 +97,14 @@ export class MayorcotizacionesProvComponent implements OnInit {
     return palabra;
   }
   buscar(){
-    this.activar=true;
     if(this.subscriptionMayorCotizaciones!=undefined){
       this.subscriptionMayorCotizaciones.unsubscribe();
     }
-    this.serviceItemCompra_OrdenCompra.mayorCotizaciones(this.range.get('start')?.value,this.range.get('end')?.value, this.formGroup.get('myControl').value);
+    this.serviceItemCompra_OrdenCompra.mayorCotizaciones(this.range.get('start')?.value,this.range.get('end')?.value,this.proveedorModel);
     this.subscriptionMayorCotizaciones= this.serviceItemCompra_OrdenCompra.listenerMayorCotizaciones().subscribe(proveedor=>{
       this.dataSource.data = proveedor
-      this.displayedColumns = ['fecha','nrodoc','oper','useract','detalle','cantidad'];
+
+      this.displayedColumns = ['cotizProducto.fecha','cotizProducto.nrodoc','cotizProducto.oper','cotizProducto.useract','cotizProducto.detalle','cantidad'];
     })
   }
   buscarProveedores(){
@@ -101,5 +113,27 @@ export class MayorcotizacionesProvComponent implements OnInit {
   }
   hacerFiltro(filtro: string){
     this.dataSource.filter = filtro;
+    this.dataSource.filterPredicate = (data, filter: string)  => {
+      const accumulator = (currentTerm:any, key:any) => {
+        return this.nestedFilterCheck(currentTerm, data, key);
+      };
+      const dataStr = Object.keys(data).reduce(accumulator, '').toLowerCase();
+      // Transform the filter by converting it to lowercase and removing whitespace.
+      const transformedFilter = filter.trim().toLowerCase();
+      return dataStr.indexOf(transformedFilter) !== -1;
+    };
+  }
+
+  nestedFilterCheck(search:any, data:any, key:any) {
+    if (typeof data[key] === 'object') {
+      for (const k in data[key]) {
+        if (data[key][k] !== null) {
+          search = this.nestedFilterCheck(search, data[key], k);
+        }
+      }
+    } else {
+      search += data[key];
+    }
+    return search;
   }
 }

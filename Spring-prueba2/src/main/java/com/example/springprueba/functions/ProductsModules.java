@@ -2,6 +2,7 @@ package com.example.springprueba.functions;
 
 import com.example.springprueba.model.itemProducto;
 import com.example.springprueba.model.producto;
+import com.example.springprueba.model.transactionProduct;
 import com.example.springprueba.service.ServiceItemProducto;
 import com.example.springprueba.service.ServiceProducto;
 import org.springframework.stereotype.Service;
@@ -27,6 +28,14 @@ public class ProductsModules extends operationRestrict{
     public List<itemProducto> periodoEntre2Fechas(List<itemProducto> itemProductosP, Date fecha,Date fecha2){
 
         return this.restrictProductoIdDatesEntre2Fechas(itemProductosP, fecha, fecha2);
+    }
+    public List<itemProducto> periodoEntre2FechasProducto(List<itemProducto> itemProductosP, Date fecha,Date fecha2, producto producto){
+
+        return this.restrictProductoIdDatesEntre2FechasProductos(itemProductosP, fecha, fecha2, producto);
+    }
+    public List<itemProducto> kardexProductoEntre2Fechas(List<itemProducto> itemProductosP, Date fecha,Date fecha2){
+        List<itemProducto> it = this.kardexProductoEntre2F(itemProductosP, fecha, fecha2);
+        return it;
     }
     public List<itemProducto> kardexOnlyDateC(List<itemProducto> itemProductosP, Date fecha) {
         return this.kardexProductoDate(itemProductosP, fecha);
@@ -62,6 +71,15 @@ public class ProductsModules extends operationRestrict{
     }
     public List<itemProducto> mayorIngresosFNC(List<itemProducto> itemProductoList,Date fecha, String nombre){
         return this.mayorIngresosNombreFecha(itemProductoList,nombre,fecha);
+    }
+    public List<itemProducto> informesEntradasProductos(Date fechaDesde, Date fechaHasta, List<itemProducto> all){
+        return this.informesEntradasProductos(all, fechaDesde, fechaHasta);
+    }
+    public List<itemProducto> informesEntradasProductosSinFactura(Date fechaDesde, Date fechaHasta, List<itemProducto> all){
+        return this.informesEntradasProductosSinFactura(all, fechaDesde, fechaHasta);
+    }
+    public List<itemProducto> informesEntradasProductosConFactura(Date fechaDesde, Date fechaHasta, List<itemProducto> all){
+        return this.informesEntradasProductosConFactura(all, fechaDesde, fechaHasta);
     }
     /*public void verificarDias(String dias){
         if(dias.equals("no")){

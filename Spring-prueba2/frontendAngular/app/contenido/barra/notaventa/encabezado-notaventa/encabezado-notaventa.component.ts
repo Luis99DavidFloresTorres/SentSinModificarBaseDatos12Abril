@@ -222,5 +222,8 @@ export class EncabezadoNotaventaComponent implements OnInit, OnChanges, OnDestro
     if(this.sujeto!=undefined){
       this.sujeto.unsubscribe();
     }
+    if(this.enviarDatos!=undefined){
+      this.enviarDatos.unsubscribe();
+    }
   }
 }

@@ -9,4 +9,5 @@ export interface ModelItemOrdenCompra{
   producto:ProductoModel;
   detalle:String;
   monto:Number;
+  costoTotal:Number;
 }

@@ -80,6 +80,9 @@
       </mat-form-field>
     </form>
   </div>
+  <div fxLayoutAlign="center center">
+    <mat-label>Actualizado por: {{useract}} en: {{fechaact}}</mat-label>
+  </div>
   <div fxLayoutAlign="center center" fxLayoutGap="10%">
     <button mat-raised-button style="background-color:#908E8D;" (click)="primer()">Primer<mat-icon>arrow_back_ios</mat-icon></button>
     <button mat-raised-button style="background-color:#908E8D;" (click)="anterior()">Anterior<mat-icon>fast_rewind</mat-icon></button>
@@ -88,3 +91,4 @@
     <button mat-raised-button style="background-color:#908E8D;" (click)="ultimo()">Ultimo<mat-icon>arrow_forward_ios</mat-icon></button>
   </div>
 </div>
+

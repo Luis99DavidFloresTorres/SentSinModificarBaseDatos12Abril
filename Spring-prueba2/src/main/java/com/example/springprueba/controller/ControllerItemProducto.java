@@ -6,6 +6,7 @@ import com.example.springprueba.functions.factories.FactoryProducto;
 import com.example.springprueba.functions.operationRestrict;
 import com.example.springprueba.model.cliente;
 import com.example.springprueba.model.itemProducto;
+import com.example.springprueba.model.producto;
 import com.example.springprueba.model.transactionProduct;
 import com.example.springprueba.repo.RepoItemProducto;
 import com.example.springprueba.repo.RepoTransproducto;
@@ -96,12 +97,67 @@ public class ControllerItemProducto extends operationRestrict{
         return new ResponseEntity<>(restrictResult, HttpStatus.OK);
     }
     @PostMapping("/getOperaciones/{fecha1}/{fecha2}")
-    public ResponseEntity<List<itemProducto>> getPeriodoEntre2fechas(@PathVariable("fecha1") Date fecha1, @PathVariable("fecha2") Date fecha2) throws ParseException {
+    public ResponseEntity<List<itemProducto>> getPeriodoEntre2fechasProductoPeriodo(@PathVariable("fecha1") Date fecha1, @PathVariable("fecha2") Date fecha2) throws ParseException {
 
         List<itemProducto> itemProductoList = serviceItemProducto.obtenerDatosIdProducto();
         List<itemProducto> restrictResult =  this.productsModules.periodoEntre2Fechas(itemProductoList,fecha1,fecha2);
         return new ResponseEntity<>(restrictResult, HttpStatus.OK);
     }
+    @PostMapping("/getOperacionesProductoPeriodo/{fecha1}/{fecha2}")
+    public ResponseEntity<List<itemProducto>> getPeriodoEntre2fechasPorProductoProductoPeriodo(@PathVariable("fecha1") Date fecha1, @PathVariable("fecha2") Date fecha2, @RequestBody producto producto) throws ParseException {
+
+        List<itemProducto> itemProductoList = serviceItemProducto.obtenerDatosIdProducto();
+        List<itemProducto> nuevaLista = new ArrayList<>();
+        itemProductoList.forEach(item->{
+            if(item.getProducto().getId().equals(producto.getId()))nuevaLista.add(item);
+        });
+        List<itemProducto> restrictResult =  this.productsModules.periodoEntre2Fechas(nuevaLista,fecha1,fecha2);
+        return new ResponseEntity<>(restrictResult, HttpStatus.OK);
+    }
+    @PostMapping("/getOperacionesKardex/{fecha1}/{fecha2}")
+    public ResponseEntity<List<itemProducto>> getPeriodoEntre2fechasKardex(@PathVariable("fecha1") Date fecha1, @PathVariable("fecha2") Date fecha2) throws ParseException {
+
+        List<itemProducto> itemProductoList = repoItemProducto.kardexProducto();
+        List<itemProducto> restrictResult =  this.productsModules.kardexProductoEntre2Fechas(itemProductoList,fecha1,fecha2);
+        return new ResponseEntity<>(restrictResult, HttpStatus.OK);
+    }
+    @PostMapping("/getOperaciones3/{fecha1}/{fecha2}")
+    public ResponseEntity<List<itemProducto>> getPeriodoEntre2fechasIngresos(@PathVariable("fecha1") Date fecha1, @PathVariable("fecha2") Date fecha2) throws ParseException {
+
+        List<transactionProduct> itemProductoList = repoTransproducto.findByFechaBetweenAndOperBefore(fecha1,fecha2,320);
+        List<itemProducto> restrictResult =  this.serviceItemProducto.entre2FechasIngresos(itemProductoList);
+        return new ResponseEntity<>(restrictResult, HttpStatus.OK);
+    }
+    @PostMapping("/getOperacionesSalidasProducto/{fecha1}/{fecha2}")
+    public ResponseEntity<List<itemProducto>> getPeriodoEntre2fechasSalidasProducto(@PathVariable("fecha1") Date fecha1, @PathVariable("fecha2") Date fecha2, @RequestBody producto producto) throws ParseException {
+
+        List<transactionProduct> itemProductoList = repoTransproducto.findByFechaBetweenAndOperAfter(fecha1,fecha2,320);
+
+        List<itemProducto> restrictResult =  this.serviceItemProducto.entre2FechasSalidasProducto(itemProductoList,producto);
+        return new ResponseEntity<>(restrictResult, HttpStatus.OK);
+    }
+    @PostMapping("/getOperacionesKardexProducto/{fecha1}/{fecha2}")
+    public ResponseEntity<List<itemProducto>> getPeriodoEntre2fechasKardexProducto(@PathVariable("fecha1") Date fecha1, @PathVariable("fecha2") Date fecha2, @RequestBody producto producto) throws ParseException {
+
+        List<itemProducto> itemProductoList = repoItemProducto.kardexModelProducto(producto);
+        List<itemProducto> restrictResult =  this.productsModules.kardexProductoEntre2Fechas(itemProductoList,fecha1,fecha2);
+        return new ResponseEntity<>(restrictResult, HttpStatus.OK);
+    }
+    @PostMapping("/getOperacionesIngresosProducto/{fecha1}/{fecha2}")
+    public ResponseEntity<List<itemProducto>> getPeriodoEntre2fechasIngresosProducto(@PathVariable("fecha1") Date fecha1, @PathVariable("fecha2") Date fecha2, @RequestBody producto producto) throws ParseException {
+
+        List<transactionProduct> itemProductoList = repoTransproducto.findByFechaBetweenAndOperBefore(fecha1,fecha2,320);
+        List<itemProducto> restrictResult =  this.serviceItemProducto.entre2FechasIngresosProducto(itemProductoList,producto);
+        return new ResponseEntity<>(restrictResult, HttpStatus.OK);
+    }
+    @PostMapping("/getOperaciones4/{fecha1}/{fecha2}")
+    public ResponseEntity<List<itemProducto>> getPeriodoEntre2fechasSalidas(@PathVariable("fecha1") Date fecha1, @PathVariable("fecha2") Date fecha2) throws ParseException {
+
+        List<transactionProduct> itemProductoList = repoTransproducto.findByFechaBetweenAndOperAfter(fecha1,fecha2,320);
+        List<itemProducto> restrictResult =  this.serviceItemProducto.entre2FechasSalidas(itemProductoList);
+        return new ResponseEntity<>(restrictResult, HttpStatus.OK);
+    }
+
     @GetMapping("/getIva")
     public ResponseEntity<List<itemProducto>> getIva() throws ParseException {
         SimpleDateFormat dateFormat = new SimpleDateFormat ("yyyy-MM-dd");
@@ -132,6 +188,89 @@ public class ControllerItemProducto extends operationRestrict{
         List<itemProducto> itemProductosList  = facadeProducto.getKardex(nombre,fecha);
         return new ResponseEntity<>(itemProductosList, HttpStatus.OK);
     }
+    @PostMapping("/informeEntradaProducto/{fechaDesde}/{fechaHasta}")
+    public ResponseEntity<List<itemProducto>> informeEntradaDeProductoValorado(@PathVariable("fechaDesde") Date fechaDesde, @PathVariable("fechaHasta") Date fechaHasta) throws ParseException {
+
+        List<itemProducto> informes = this.productsModules.informesEntradasProductos(fechaDesde, fechaHasta, repoItemProducto.findAll());
+        return new ResponseEntity<>(informes, HttpStatus.OK);
+    }
+    @PostMapping("/informeEntradaProductoConFactura/{fechaDesde}/{fechaHasta}")
+    public ResponseEntity<List<itemProducto>> informeEntradaDeProductoValoradoConFactura(@PathVariable("fechaDesde") Date fechaDesde, @PathVariable("fechaHasta") Date fechaHasta) throws ParseException {
+
+        List<itemProducto> informes = this.productsModules.informesEntradasProductosConFactura(fechaDesde, fechaHasta, repoItemProducto.findAll());
+        return new ResponseEntity<>(informes, HttpStatus.OK);
+    }
+    @PostMapping("/informeEntradaProductoSinFactura/{fechaDesde}/{fechaHasta}")
+    public ResponseEntity<List<itemProducto>> informeEntradaDeProductoValoradoSinFactura(@PathVariable("fechaDesde") Date fechaDesde, @PathVariable("fechaHasta") Date fechaHasta) throws ParseException {
+
+        List<itemProducto> informes = this.productsModules.informesEntradasProductosSinFactura(fechaDesde, fechaHasta, repoItemProducto.findAll());
+        return new ResponseEntity<>(informes, HttpStatus.OK);
+    }
+    @PostMapping("/informeSalidasProducto/{fechaDesde}/{fechaHasta}")
+    public ResponseEntity<List<itemProducto>> informeSalidaDeProductoValorado(@PathVariable("fechaDesde") Date fechaDesde, @PathVariable("fechaHasta") Date fechaHasta) throws ParseException {
+        List<itemProducto> informes = this.repoItemProducto.rangoEntre2Fechas(fechaDesde, fechaHasta);
+        List<itemProducto> returnList = new ArrayList<>();
+        for (itemProducto itemProductoF: informes){
+            Integer ope = itemProductoF.getTransproducto().getOper();
+
+            if(ope>320){
+
+                Double cantidad =Double.valueOf(itemProductoF.getCantidad()) ;
+                itemProductoF.setSalidas(cantidad);
+                returnList.add(itemProductoF);
+            }
+        }
+
+        return new ResponseEntity<>(returnList, HttpStatus.OK);
+    }
+    @PostMapping("/informeSalidaEntrada/{fechaDesde}/{fechaHasta}")
+    public ResponseEntity<List<itemProducto>> informeSalidaEntradaProductos(@PathVariable("fechaDesde") Date fechaDesde, @PathVariable("fechaHasta") Date fechaHasta) throws ParseException {
+        List<itemProducto> informes = this.repoItemProducto.rangoEntre2Fechas(fechaDesde, fechaHasta);
+        List<itemProducto> returnList = new ArrayList<>();
+        for (itemProducto itemProductoF: informes){
+            Integer ope = itemProductoF.getTransproducto().getOper();
+
+            if(ope>320){
+
+                Double cantidad =Double.valueOf(itemProductoF.getCantidad()) ;
+                itemProductoF.setSalidas(cantidad);
+                itemProductoF.setIngresos(0.0);
+                returnList.add(itemProductoF);
+            }
+            if(ope<320){
+                Double cantidad =Double.valueOf(itemProductoF.getCantidad()) ;
+                itemProductoF.setIngresos(cantidad);
+                itemProductoF.setSalidas(0.0);
+                returnList.add(itemProductoF);
+            }
+        }
+
+        return new ResponseEntity<>(returnList, HttpStatus.OK);
+    }
+    @PostMapping("/informeUtilidadSalidaProducto/{fechaDesde}/{fechaHasta}")
+    public ResponseEntity<List<itemProducto>> informeSalidaDeUtilidadSalidaValorado(@PathVariable("fechaDesde") Date fechaDesde, @PathVariable("fechaHasta") Date fechaHasta) throws ParseException {
+        List<itemProducto> informes = this.repoItemProducto.rangoEntre2Fechas(fechaDesde, fechaHasta);
+        List<itemProducto> returnList = new ArrayList<>();
+        for (itemProducto itemProductoF: informes){
+            Integer ope = itemProductoF.getTransproducto().getOper();
+
+            if(ope>320){
+
+                Double cantidad =Double.valueOf(itemProductoF.getCantidad()) ;
+                itemProductoF.setSalidas(cantidad);
+              /*  double utilidadP = itemProductoF.getProducto().getUtilidad()*0.010;
+                double costoTotal = itemProductoF.getCantidad()*itemProductoF.getCosto();
+                double utilidadPrecio = costoTotal*utilidadP;
+
+
+                itemProductoF.getProducto().setUtilidadInforme(utilidadPrecio);*/
+                returnList.add(itemProductoF);
+
+            }
+        }
+
+        return new ResponseEntity<>(returnList, HttpStatus.OK);
+    }
     @PostMapping("/add")
     public ResponseEntity<LoginResponse> addProducto(@RequestBody ArrayList<itemProducto> itemsProducto) throws ParseException{
         int nrodoc = itemsProducto.get(0).getTransproducto().getNrodoc();
@@ -150,10 +289,10 @@ public class ControllerItemProducto extends operationRestrict{
         loginResponse.setRespuesta("exito");
         return new ResponseEntity(loginResponse, HttpStatus.OK);
     }
-    @GetMapping("/tablasEntregaporCliente/{fecha1}/{fecha2}/{nombreCliente}")
-    public ResponseEntity<List<itemProducto>> entregaProductoPorcliente(@PathVariable("fecha1") Date fecha1, @PathVariable("fecha2") Date fecha2,@PathVariable("nombreCliente") String nombreCliente) throws ParseException {
+    @PostMapping("/tablasEntregaporCliente/{fecha1}/{fecha2}")
+    public ResponseEntity<List<itemProducto>> entregaProductoPorcliente(@PathVariable("fecha1") Date fecha1, @PathVariable("fecha2") Date fecha2,@RequestBody cliente cliente) throws ParseException {
 
-        List<itemProducto> productoPorCliente =  this.factoryProducto.entregaProductosPorCliente(fecha1,fecha2,nombreCliente);
+        List<itemProducto> productoPorCliente =  this.factoryProducto.entregaProductosPorCliente(fecha1,fecha2,cliente);
         return new ResponseEntity<>(productoPorCliente, HttpStatus.OK);
     }
 }

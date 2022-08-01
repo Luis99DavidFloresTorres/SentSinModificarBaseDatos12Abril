@@ -65,6 +65,7 @@ export class ServiceProveedor{
       var proveedorAll:ProveedorModel[]=[];
       proveedorAll= data;
       this.sujetoProveedorEntre2Fechas.next(data)
+
   })
   }
   listenerProveedor(){

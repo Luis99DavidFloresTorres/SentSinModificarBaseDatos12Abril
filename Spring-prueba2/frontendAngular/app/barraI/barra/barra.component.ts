@@ -99,7 +99,7 @@ export class BarraComponent implements OnInit, OnDestroy {
     this.subClaseCodificadorRubro,this.subClaseCodificadorTipoCliente,this.subClaseCodificadorZona,this.subClaseCodificadorUnidad, this.subClaseCodificadorTipoGasto]
   codificadorRutas: AdministrarRutas={clase:this.claseCodificador,subClases:this.subClaseCodificadorvector};
 
-  subclasesProyectovector:subClase[]=[this.subClaseCotizacionProyecto,this.subClaseGestionProyecto,this.subClaseAdjudicarProyecto,this.subClaseEstadoProyecto, this.subClaseCobroProyecto, this.subClaseConsultas, this.subClaseGestionHerramienta, this.subClaseAsignacionHerramienta, this.subClaseDevolucionHerramienta]
+  subclasesProyectovector:subClase[]=[this.subClaseCotizacionProyecto,this.subClaseGestionProyecto,this.subClaseAdjudicarProyecto,this.subClaseEstadoProyecto, this.subClaseCobroProyecto, this.subClaseConsultas, this.subClaseGestionHerramienta, this.subClaseAsignacionHerramienta, this.subClaseDevolucionHerramienta, this.subClaseSolicitudPresupuesto, this.subClaseEntregaProductoPorFecha, this.subClaseEntregaProductosProyecto, this.subClaseDescargoGasto]
   proyectoRutas: AdministrarRutas={clase:this.claseProyecto,subClases:this.subclasesProyectovector};
 
   subclasesProductovector:subClase[]=[this.subClaseGestionProducto,this.subClaseGestionSeriales,this.subClaseItemProducto,this.subClaseInventarioProducto,this.subClaseConsultaDeposito,this.subClaseProductoProyecto];

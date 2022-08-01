@@ -41,7 +41,7 @@ public class Imprimir {
         for (itemnotaventa itemnotaventa : itemnotaventaList) {
             row = sheet.createRow(initRow);
             row.createCell(0).setCellValue(itemnotaventa.getProducto().getCodigo());
-            row.createCell(1).setCellValue(itemnotaventa.getNotaventa().getDetalle());
+            //row.createCell(1).setCellValue(itemnotaventa.getNotaventa().getDetalle());
             row.createCell(2).setCellValue(itemnotaventa.getProducto().getUnidad().getNombre());
             row.createCell(3).setCellValue(itemnotaventa.getCantidad());
             row.createCell(4).setCellValue(itemnotaventa.getProducto().getPrecio());
@@ -71,7 +71,7 @@ public class Imprimir {
         for (itemnotaventa itemnotaventa : itemnotaventaList) {
             row = sheet.createRow(initRow);
             row.createCell(0).setCellValue(itemnotaventa.getProducto().getCodigo());
-            row.createCell(1).setCellValue(itemnotaventa.getNotaventa().getDetalle());
+            //row.createCell(1).setCellValue(itemnotaventa.getNotaventa().getDetalle());
             row.createCell(2).setCellValue(itemnotaventa.getProducto().getUnidad().getNombre());
             row.createCell(3).setCellValue(itemnotaventa.getCantidad());
             row.createCell(4).setCellValue(itemnotaventa.getProducto().getPrecio());

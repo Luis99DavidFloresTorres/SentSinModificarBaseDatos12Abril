@@ -23,6 +23,7 @@ public class ordencompra {
     private String detalle;
     private Integer oper    ;
     private String useract;
+    private String contactopre;
     @ManyToOne
     @JoinColumn(name = "proveedor_id")
     @JsonInclude(JsonInclude.Include.NON_NULL)

@@ -25,6 +25,7 @@ export class BuscarClientesComponent implements OnInit {
 
   agregarCliente(cliente:ModelCliente){
     if(this.data.clase=='entregaProductoPorCliente'){
+      console.log("mandaaaa");
       this.serviceCliente.getEncontrarEntregaProductoPorCliente().next(cliente);
     }else if(this.data.clase=='gestionCliente'){
       this.serviceCliente.getEncontrarGestionCliente().next(cliente);

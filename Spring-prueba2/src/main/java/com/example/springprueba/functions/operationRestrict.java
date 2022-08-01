@@ -1,12 +1,15 @@
 package com.example.springprueba.functions;
 
 import com.example.springprueba.model.itemProducto;
+import com.example.springprueba.model.producto;
+import com.example.springprueba.model.transactionProduct;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 public abstract class operationRestrict {
     public List<itemProducto> kardexProductoDate(List<itemProducto> itemProductosP, Date fecha) {
@@ -105,6 +108,56 @@ public abstract class operationRestrict {
             }
             return returnArraylistProduct;
     }
+    public List<itemProducto> kardexProductoEntre2F(List<itemProducto> itemProductosP, Date fechaInicio, Date fechaFinal){
+
+
+        List<itemProducto> returnArraylistProduct = new ArrayList<>();
+        Long idP = itemProductosP.get(0).getProducto_id();
+        Double saldo = 0.0;
+        for (itemProducto itemProductoF : itemProductosP) {
+            Double invinicial = 0.0;
+            Double salidas = 0.0;
+            Double ingresos = 0.0;
+            Integer operation = itemProductoF.getOpe();
+            Long idProductoFor= itemProductoF.getProducto_id();
+
+            if(idP.equals(idProductoFor)){
+                Date fechaTransproducto = itemProductoF.getFechaact();
+                if ((fechaTransproducto.before(fechaFinal)|| fechaTransproducto.equals(fechaFinal))&&(fechaTransproducto.equals(fechaInicio)|| fechaInicio.after(fechaTransproducto))) {
+                    invinicial =lessThan320Inicial(operation,itemProductoF,invinicial);
+                } else {
+                    ingresos = lessThan320SalidasIngresos(operation, itemProductoF, ingresos, salidas, "ingresos");
+                    salidas = lessThan320SalidasIngresos(operation, itemProductoF, ingresos, salidas, "salidas");
+                }
+                itemProductoF.setInvinicial(invinicial);
+                itemProductoF.setProducto_id(itemProductoF.getProducto_id());
+                itemProductoF.setSalidas(salidas);
+                itemProductoF.setIngresos(ingresos);
+                saldo +=invinicial+ingresos-salidas;
+                itemProductoF.setSaldo(saldo);
+                returnArraylistProduct.add(itemProductoF);
+            }else{
+                saldo=0.0;
+                idP=itemProductoF.getProducto_id();
+                Date fechaTransproducto = itemProductoF.getFechaact();
+                if ((fechaTransproducto.before(fechaFinal)|| fechaTransproducto.equals(fechaFinal))&&(fechaTransproducto.equals(fechaInicio)|| fechaTransproducto.after(fechaInicio))) {
+                    invinicial =lessThan320Inicial(operation,itemProductoF,invinicial);
+                } else {
+                    ingresos = lessThan320SalidasIngresos(operation, itemProductoF, ingresos, salidas, "ingresos");
+                    salidas = lessThan320SalidasIngresos(operation, itemProductoF, ingresos, salidas, "salidas");
+                }
+                itemProductoF.setInvinicial(invinicial);
+                itemProductoF.setProducto_id(itemProductoF.getProducto_id());
+                itemProductoF.setSalidas(salidas);
+                itemProductoF.setIngresos(ingresos);
+                saldo +=invinicial+ingresos-salidas;
+                itemProductoF.setSaldo(saldo);
+                returnArraylistProduct.add(itemProductoF);
+            }
+
+        }
+        return returnArraylistProduct;
+    }
     public List<itemProducto> restrictProductoIdDates(List<itemProducto> itemProductosP, Date fecha) {
         List<itemProducto> returnArraylistProduct = new ArrayList<>();
         Double invinicial = 0.0;
@@ -150,6 +203,7 @@ public abstract class operationRestrict {
 
         return returnArraylistProduct;
     }
+
     public List<itemProducto> restrictProductoIdDatesEntre2Fechas(List<itemProducto> itemProductosP, Date fecha, Date fecha2){
         List<itemProducto> returnArraylistProduct = new ArrayList<>();
         Double invinicial = 0.0;
@@ -196,6 +250,52 @@ public abstract class operationRestrict {
 
         return returnArraylistProduct;
     }
+    public List<itemProducto> restrictProductoIdDatesEntre2FechasProductos(List<itemProducto> itemProductosP, Date fecha, Date fecha2, producto producto){
+        List<itemProducto> returnArraylistProduct = new ArrayList<>();
+        Double invinicial = 0.0;
+        Double salidas = 0.0;
+        Double ingresos = 0.0;
+        Long id = itemProductosP.get(0).getProducto().getId();
+        fecha2.setHours(23);
+        Integer contador = 0;
+        for (itemProducto itemProductoF : itemProductosP) {
+            Integer operation = itemProductoF.getTransproducto().getOper();
+            Long idProd = itemProductoF.getProducto().getId();
+            Date fechaTransproducto = itemProductoF.getTransproducto().getFecha();
+            if (idProd == id) {
+                if (rangoMenorDeFechas(fecha, fechaTransproducto) && producto.getId().equals(idProd) ) {
+                    invinicial = lessThan320Inicial(operation, itemProductoF, invinicial);
+                } else if(fechaTransproducto.before(fecha2) || fecha2.equals(fechaTransproducto) ){
+                    ingresos = lessThan320SalidasIngresos(operation, itemProductoF, ingresos, salidas, "ingresos");
+                    salidas = lessThan320SalidasIngresos(operation, itemProductoF, ingresos, salidas, "salidas");
+                }
+
+            } else {
+                id = idProd;
+                returnArraylistProduct = saveValuesInvSalIngSald(itemProductosP.get(contador-1), ingresos, salidas, invinicial, returnArraylistProduct);
+                invinicial = 0.0;
+                ingresos = 0.0;
+                salidas = 0.0;
+                if (fecha.after(fechaTransproducto) && producto.getId().equals(idProd)) {
+                    invinicial = lessThan320Inicial(operation, itemProductoF, invinicial);
+                }else if((fechaTransproducto.before(fecha2) || fecha2.equals(fechaTransproducto))&& producto.getId().equals(idProd) ){
+                    ingresos = lessThan320SalidasIngresos(operation, itemProductoF, ingresos, salidas, "ingresos");
+                    salidas = lessThan320SalidasIngresos(operation, itemProductoF, ingresos, salidas, "salidas");
+                }
+
+            }
+            contador++;
+        }
+        //en la ultima iteracion ya no entra al else es por eso que agregamos al final de todo una vez mas
+        itemProducto lastItemProduct = itemProductosP.get(contador-1);
+        lastItemProduct.setInvinicial(invinicial);
+        lastItemProduct.setSalidas(salidas);
+        lastItemProduct.setIngresos(ingresos);
+        lastItemProduct.setSaldo(ingresos+invinicial-salidas);
+        returnArraylistProduct.add(lastItemProduct);
+
+        return returnArraylistProduct;
+    }
     public List<itemProducto> mayorIngresosFecha(List<itemProducto> itemProductoList, Date fecha){
         List<itemProducto> fechasItemProduct = itemProductosFechaClienteHaciaDelante(fecha, itemProductoList);
         List<itemProducto> returnList = new ArrayList<>();
@@ -210,9 +310,63 @@ public abstract class operationRestrict {
         }
         return  returnList;
     }
-    /*public List<itemProducto> kardexProducto(List<itemProducto> itemProductoList, String nombre, Date fecha){
 
-    }*/
+    public List<itemProducto> informesEntradasProductos(List<itemProducto> all, Date fechaDesde, Date fechaHasta){
+        List<itemProducto> entrefechas = this.between2Dates(fechaDesde,fechaHasta, all);
+        List<itemProducto> returnList = new ArrayList<>();
+        for (itemProducto itemProductoF: entrefechas){
+            Integer ope = itemProductoF.getTransproducto().getOper();
+            if(ope<320){
+                Double cantidad =Double.valueOf(itemProductoF.getCantidad()) ;
+                itemProductoF.setCostoTotal(0.0);
+                itemProductoF.setIngresos(cantidad);
+                if(Objects.isNull(itemProductoF.getTransproducto().getFactura())&& itemProductoF.getTransproducto().getNotaventa().equals(1)){
+                    itemProductoF.getTransproducto().setFactura(0);
+                }else if(Objects.isNull(itemProductoF.getTransproducto().getFactura())){
+                    itemProductoF.getTransproducto().setFactura(1);
+                }
+                returnList.add(itemProductoF);
+            }
+        }
+        return  returnList;
+    }
+    public List<itemProducto> informesEntradasProductosSinFactura(List<itemProducto> all, Date fechaDesde, Date fechaHasta){
+        List<itemProducto> entrefechas = this.between2Dates(fechaDesde,fechaHasta, all);
+        List<itemProducto> returnList = new ArrayList<>();
+        for (itemProducto itemProductoF: entrefechas){
+            Integer ope = itemProductoF.getTransproducto().getOper();
+            Integer notaventa = itemProductoF.getTransproducto().getNotaventa();
+            Integer factura = itemProductoF.getTransproducto().getFactura();
+            if((!(Objects.isNull(factura)  && ( Objects.isNull(notaventa) ||notaventa.equals(0))))|| (!Objects.isNull(notaventa)&&notaventa.equals(1))){
+                //if(!Objects.isNull(factura))
+                if((ope<320 && ( (Objects.isNull(factura) && notaventa.equals(1)) ||(!Objects.isNull(factura)&&factura.equals(0))))){
+                    Double cantidad =Double.valueOf(itemProductoF.getCantidad()) ;
+                    itemProductoF.setCostoTotal(0.0);
+                    if(Objects.isNull(factura)) itemProductoF.getTransproducto().setFactura(0);
+                    itemProductoF.setIngresos(cantidad);
+                    returnList.add(itemProductoF);
+                }
+            }
+
+        }
+        return  returnList;
+    }
+    public List<itemProducto> informesEntradasProductosConFactura(List<itemProducto> all, Date fechaDesde, Date fechaHasta){
+        List<itemProducto> entrefechas = this.between2Dates(fechaDesde,fechaHasta, all);
+        List<itemProducto> returnList = new ArrayList<>();
+        for (itemProducto itemProductoF: entrefechas){
+            Integer ope = itemProductoF.getTransproducto().getOper();
+            Integer notaventa = itemProductoF.getTransproducto().getNotaventa();
+            Integer factura = itemProductoF.getTransproducto().getFactura();
+            if((ope<320) && (((Objects.isNull(factura)||factura.equals(1)) && (!Objects.isNull(notaventa) && !notaventa.equals(1))))){//Objects.isNull(factura) &&
+                Double cantidad =Double.valueOf(itemProductoF.getCantidad()) ;
+                itemProductoF.setCostoTotal(0.0);
+                itemProductoF.setIngresos(cantidad);
+                returnList.add(itemProductoF);
+            }
+        }
+        return  returnList;
+    }
     public List<itemProducto> mayorIngresosNombre(List<itemProducto> itemProductoList, String nombre){
         List<itemProducto> fechasItemProduct = equalName(nombre, itemProductoList);
 
@@ -303,6 +457,18 @@ public abstract class operationRestrict {
         for(itemProducto itemProductoF: vector){
             Date fechaTransproducto = itemProductoF.getFechaact();
             if (((clienteFecha.before(fechaTransproducto)) || (clienteFecha.equals(fechaTransproducto))) && (nombre.equals(itemProductoF.getNombre()))) {
+                itemProductoList.add(itemProductoF);
+            }
+        }
+        return itemProductoList;
+    }
+    public List<itemProducto> between2Dates(Date fechaDesde, Date fechaHasta, List<itemProducto> lista){
+        List<itemProducto> itemProductoList = new ArrayList<>();
+        for(itemProducto itemProductoF: lista){
+            Date fechaTransproducto = itemProductoF.getTransproducto().getFecha();
+           // Integer ope = itemProductoF.getTransproducto().getOper();
+            if (((fechaTransproducto.after(fechaDesde)) || (fechaDesde.equals(fechaTransproducto))) && ((fechaTransproducto.before(fechaHasta)) || (fechaHasta.equals(fechaTransproducto)))) {
+                itemProductoF.setMonto(itemProductoF.getCantidad()*itemProductoF.getCosto());
                 itemProductoList.add(itemProductoF);
             }
         }
@@ -401,7 +567,7 @@ public abstract class operationRestrict {
         itemProducto.setSalidas(salidas);
         itemProducto.setInvinicial(invinicial);
         itemProducto.setSaldo(ingresos+invinicial-salidas);
-
+        itemProducto.setCostoTotal(itemProducto.getSaldo()*itemProducto.getCosto());
         agregarList.add(itemProducto);
         return agregarList;
     }

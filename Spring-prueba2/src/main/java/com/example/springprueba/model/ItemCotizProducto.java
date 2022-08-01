@@ -25,10 +25,10 @@ public class ItemCotizProducto implements Serializable {
     public ItemCotizProducto(){
 
     }
-    public ItemCotizProducto(cotizProducto cotizProducto, producto producto, Double monto, Double precio, Double cantidad){
+    public ItemCotizProducto(cotizProducto cotizProducto, producto producto, Double precio, Double cantidad){
         this.cotizProducto = cotizProducto;
         this.producto=producto;
-        this.monto=monto;
+        this.monto=precio*cantidad;
         this.precio = precio;
         this.cantidad = cantidad;
     }

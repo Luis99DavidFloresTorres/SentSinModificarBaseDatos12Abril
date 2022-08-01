@@ -33,6 +33,9 @@ export class ItemProyectoComponent implements OnInit, OnDestroy, AfterViewInit {
     this.formCheckboxGroup = this.formBuild.group({
       check1:['',[Validators.required]],
   })
+  if(this.sujetoSubscripcion!= undefined){
+    this.sujetoSubscripcion.unsubscribe();
+  }
   this.sujetoSubscripcion=this.serviceItemProyecto.listenerDatosItemProyecto().subscribe((datos)=>{
    // console.log(datos.splice(0));//slice devuelve un array extra y splica hace sobre el mismo
     //this.nuevoVector = datos.splice(0,datos.length-1);

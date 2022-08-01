@@ -13,6 +13,8 @@ public class itemcompra {
     private Integer cantidad;
     private String detalle;
     private Double monto;
+    @Transient
+    private Double costoTotal;
     @ManyToOne
     @JoinColumn(name = "producto_id")
     producto producto;
@@ -25,6 +27,10 @@ public class itemcompra {
         this.ordencompra=ordencompra;
         this.precio = precio;
         this.monto = monto;
+    };
+    public itemcompra(ordencompra ordencompra, Double costoTotal){
+        this.ordencompra=ordencompra;
+        this.costoTotal = costoTotal;
     };
     public itemcompra(ordencompra ordencompra, Double precio, Double monto, Integer cantidad, producto producto){
         this.ordencompra=ordencompra;

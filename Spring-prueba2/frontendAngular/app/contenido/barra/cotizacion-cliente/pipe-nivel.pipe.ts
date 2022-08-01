@@ -11,5 +11,4 @@ export class PipeNivelPipe implements PipeTransform {
     }
     else return value;
   }
-
 }

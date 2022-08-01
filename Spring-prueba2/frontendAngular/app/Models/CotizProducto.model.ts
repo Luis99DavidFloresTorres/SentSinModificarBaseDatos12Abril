@@ -5,4 +5,5 @@ export interface CotizProductoModel{
   cantidad:Number;
   oper:Number;
   nrodoc:Number;
+
 }

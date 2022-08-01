@@ -14,7 +14,7 @@
     <mat-error *ngIf="range.controls.start.hasError('matStartDateInvalid')">Invalid start date</mat-error>
     <mat-error *ngIf="range.controls.end.hasError('matEndDateInvalid')">Invalid end date</mat-error>
   </mat-form-field>
-  <mat-form-field>
+ <!-- <mat-form-field>
     <input type="text"
           placeholder="Nombre del Cliente"
           aria-label="cliente"
@@ -23,15 +23,23 @@
           required
           [matAutocomplete]="auto">
     <mat-autocomplete #auto="matAutocomplete">
-      <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
+      <mat-option *ngFor="let option of filteredOptions | async; let idx = index" [value]="option" (click)="clienteGuardar(idx)">
         {{option}}
       </mat-option>
     </mat-autocomplete>
 
+  </mat-form-field>-->
+  <mat-form-field appearance="fill">
+    <mat-label>Nombre Cliente</mat-label>
+    <mat-select formControlName="myControl">
+      <mat-option *ngFor="let option of options; let idx = index"   [value]="option" (click)="clienteGuardar(idx)">
+        {{option}}
+      </mat-option>
+    </mat-select>
   </mat-form-field>
   <button mat-icon-button (click)="buscarClientes()"><mat-icon>search</mat-icon></button>
 </form >
-<div  *ngIf="activar">
+<div >
   <div fxLayoutAlign="center center">
     <mat-form-field  color= "primary" fxFlex="30%">
       <input matInput id="input" placeholder="buscador" (keyup)="hacerFiltro($any($event.target).value)">
@@ -62,16 +70,16 @@
         <mat-cell *matCellDef="let element">  {{element.transproducto.cliente.nombre}} </mat-cell>
       </ng-container>
       <ng-container matColumnDef="cantidad">
-        <mat-header-cell  *matHeaderCellDef mat-sort-header>Cantidad</mat-header-cell>
+        <mat-header-cell  *matHeaderCellDef mat-sort-header>Salidas</mat-header-cell>
         <mat-cell *matCellDef="let element">  {{element.cantidad}} </mat-cell>
       </ng-container>
-      <ng-container matColumnDef="productoNombre">
+      <ng-container matColumnDef="producto.nombre">
         <mat-header-cell  *matHeaderCellDef mat-sort-header>Producto</mat-header-cell>
-        <mat-cell *matCellDef="let element">  {{element.productoNombre}} </mat-cell>
+        <mat-cell *matCellDef="let element">  {{element.producto.nombre}} </mat-cell>
       </ng-container>
-      <ng-container matColumnDef="precioProducto">
+      <ng-container matColumnDef="producto.precio">
         <mat-header-cell  *matHeaderCellDef mat-sort-header>Precio</mat-header-cell>
-        <mat-cell *matCellDef="let element">  {{element.precioProducto}} </mat-cell>
+        <mat-cell *matCellDef="let element">  {{element.producto.precio}} </mat-cell>
       </ng-container>
       <ng-container matColumnDef="transproducto.factura">
         <mat-header-cell  *matHeaderCellDef mat-sort-header>Factura</mat-header-cell>
@@ -85,12 +93,30 @@
         <mat-header-cell  *matHeaderCellDef mat-sort-header>Costo</mat-header-cell>
         <mat-cell *matCellDef="let element">  {{element.costo}} </mat-cell>
       </ng-container>
-      <ng-container matColumnDef="costoTotal">
+      <ng-container matColumnDef="serial">
+        <mat-header-cell  *matHeaderCellDef mat-sort-header>Serial</mat-header-cell>
+        <mat-cell *matCellDef="let element">  {{element.serial}} </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="monto">
         <mat-header-cell  *matHeaderCellDef mat-sort-header>Costo Total</mat-header-cell>
-        <mat-cell *matCellDef="let element">  {{element.costoTotal}} </mat-cell>
+        <mat-cell *matCellDef="let element">  {{element.monto}} </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="transproducto.proyecto.nombre">
+        <mat-header-cell  *matHeaderCellDef mat-sort-header>Operacion/Proyecto</mat-header-cell>
+        <mat-cell *matCellDef="let element">  {{element.transproducto.proyecto.nombre}} </mat-cell>
       </ng-container>
       <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
       <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
     </mat-table>
   </div>
+  <form fxLayoutAlign="end" fxLayoutGap="10px">
+    <mat-form-field>
+      <mat-label>Cantidad</mat-label>
+      <input matInput [formControl]="cantidad">
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Costo Total</mat-label>
+      <input matInput [formControl]="costoTotal">
+    </mat-form-field>
+  </form>
 </div>

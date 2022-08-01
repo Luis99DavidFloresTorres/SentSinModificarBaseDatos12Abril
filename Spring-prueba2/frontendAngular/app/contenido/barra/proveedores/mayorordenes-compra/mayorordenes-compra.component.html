@@ -32,7 +32,7 @@
   </mat-form-field>
   <button mat-icon-button (click)="buscarProveedores()"><mat-icon>search</mat-icon></button>
 </form >
-<div  *ngIf="activar">
+<div  >
   <div fxLayoutAlign="center center">
     <mat-form-field  color= "primary" fxFlex="30%">
       <input matInput id="input" placeholder="buscador" (keyup)="hacerFiltro($any($event.target).value)">
@@ -55,8 +55,12 @@
         <mat-cell *matCellDef="let element">  {{element.ordencompra.nrodoc}} </mat-cell>
       </ng-container>
       <ng-container matColumnDef="ordencompra.detalle">
-        <mat-header-cell  *matHeaderCellDef mat-sort-header>Nombre</mat-header-cell>
+        <mat-header-cell  *matHeaderCellDef mat-sort-header>Observaciones</mat-header-cell>
         <mat-cell *matCellDef="let element">  {{element.ordencompra.detalle}} </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="ordencompra.oper">
+        <mat-header-cell  *matHeaderCellDef mat-sort-header>Tipo transacción</mat-header-cell>
+        <mat-cell *matCellDef="let element">  {{element.ordencompra.oper}} </mat-cell>
       </ng-container>
       <ng-container matColumnDef="ordencompra.fecha">
         <mat-header-cell  *matHeaderCellDef mat-sort-header>Fecha</mat-header-cell>

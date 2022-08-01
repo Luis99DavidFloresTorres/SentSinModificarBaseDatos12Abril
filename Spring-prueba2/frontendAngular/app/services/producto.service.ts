@@ -22,8 +22,16 @@ export class ServiceProducto{
   private productoSubjectFindByname = new Subject<ProductoModel>();
   private clienteShowSubject = new Subject<ProductoModel[]>();
   private obtenerCodigos = new Subject<String[]>();
+  private subjectProductoEntreFechas = new Subject<ProductoModel>();
   private recuperarDocumentoWithProducto = new Subject<ProductoModel>();
+  private subjectProductoEntreFechasDeposito= new Subject<ProductoModel>();
   constructor(private http:HttpClient){
+  }
+  getEntre2Fechas(){
+    return this.subjectProductoEntreFechas;
+  }
+  getEntre2FechasDeposito(){
+    return this.subjectProductoEntreFechasDeposito;
   }
   obtenerProductos(){
     this.http.get<ProductoModel[]>(this.baseUrl+'api/producto/saldo')
@@ -163,5 +171,11 @@ export class ServiceProducto{
   }
   listenerObtenerAllCodigos(){
     return this.obtenerCodigos.asObservable();
+  }
+  listenerProductoEntreFechas(){
+    return this.subjectProductoEntreFechas.asObservable();
+  }
+  listenerProductoEntreFechasDeposito(){
+    return this.subjectProductoEntreFechasDeposito.asObservable();
   }
 }

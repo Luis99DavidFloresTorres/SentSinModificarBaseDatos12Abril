@@ -14,6 +14,7 @@ import  {  saveAs  }  from  'file-saver' ;
 export class ServiceItemnotaventa{
   baseUrl = environment.baseUrl;
   subjectAgregar = new Subject<LoginModel>();
+  subjectFechasProducto=new Subject<ModelItemnotaventa[]>();
   itemsVentaByNotaventa= new Subject<ModelItemnotaventa[]>();
 
   constructor(private http:HttpClient){
@@ -48,10 +49,20 @@ export class ServiceItemnotaventa{
     })
 
   }
+  fechasProducto(fecha1:Date,fecha2:Date,nombre:String){
+    this.http.get<ModelItemnotaventa[]>(this.baseUrl+'api/itemnotaventa/fechasP/'+fecha1+'/'+fecha2+"/"+nombre).subscribe(data=>{
+      var items:ModelItemnotaventa[] = data;
+      console.log(data);
+      this.subjectFechasProducto.next(items);
+    })
+  }
   listenerItemsVentaByNotaventa(){
     return this.itemsVentaByNotaventa.asObservable();
   }
   listenerSubjectItemAgregado(){
     return this.subjectAgregar.asObservable();
+  }
+  listenerFechasProducto(){
+    return this.subjectFechasProducto.asObservable();
   }
 }

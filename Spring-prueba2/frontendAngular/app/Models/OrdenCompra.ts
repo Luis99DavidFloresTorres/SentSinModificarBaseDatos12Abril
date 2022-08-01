@@ -11,4 +11,5 @@ export interface ModelOrdenCompra{
   oper:Number;
   proveedor:ProveedorModel;
   proveedorNombre:String;
+  contactopre:String;
 }

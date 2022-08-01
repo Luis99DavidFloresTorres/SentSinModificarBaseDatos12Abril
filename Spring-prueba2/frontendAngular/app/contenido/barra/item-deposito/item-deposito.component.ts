@@ -1,4 +1,4 @@
-import { Component, OnInit, SimpleChanges, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, SimpleChanges, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
@@ -16,13 +16,15 @@ import { DateAdapter } from '@angular/material/core';
 import { ServiceImprimirConsulta } from 'src/app/services/ImprimirConsultas.service';
 import { Entre2fechasDepositoComponent } from './entre2fechas-deposito/entre2fechas-deposito.component';
 import { FiltradorDeConsultas } from 'src/app/Models/AdministrarFiltradorDeConsultas.model';
+import { Entre2fechasproductoComponent } from '../item-producto/entre2fechasproducto/entre2fechasproducto.component';
+import { Entre2fechasproductodepositoComponent } from './entre2fechasproductodeposito/entre2fechasproductodeposito.component';
 
 @Component({
   selector: 'app-item-deposito',
   templateUrl: './item-deposito.component.html',
   styleUrls: ['./item-deposito.component.css']
 })
-export class ItemDepositoComponent implements OnInit {
+export class ItemDepositoComponent implements OnInit, OnDestroy {
   displayedColumns = ['codigo','nombre','unidad','invinicial','ingresos','salidas','saldo'];
   administrarFiltradorDeConsultas:FiltradorDeConsultas|any= new FiltradorDeConsultas();
   dataSource= new MatTableDataSource<ItemProductoModel>();
@@ -46,6 +48,7 @@ export class ItemDepositoComponent implements OnInit {
   datosSaldo=[]
   datosInvinicial=[]
   datosUnidad = []
+  datosNrodocTrans=[]
   subtitulo="Periodo"
   valor= "Primeros 1000 ordenados por Fecha y Deposito";
   modulo = "";
@@ -88,6 +91,9 @@ export class ItemDepositoComponent implements OnInit {
     this.formCheckboxGroup = this.formBuild.group({
       check1:['',[Validators.required]],
   })
+  if(this.sujetoSubscripcion!= undefined){
+    this.sujetoSubscripcion.unsubscribe();
+  }
   this.serviceItemDeposito.obtener1000DatosPorFechaYDeposito();
   this.sujetoSubscripcion=this.serviceItemDeposito.listener1000PorFechaYDeposito().subscribe((datos)=>{
 
@@ -135,6 +141,54 @@ export class ItemDepositoComponent implements OnInit {
     this.dataSource.data = datos;
     this.dataSource.paginator = this.pag;
     this.displayedColumns = ['fechaact','nrodoc','ope','clienteNombre','observaciones','serial','salidas'];
+  })
+  this.sujetoSubscripcion = this.serviceItemDeposito.listenerProductoPeriodo2FechasSalidas().subscribe((datos)=>{
+    this.modulo ="salida";
+    this.dataSource.data = datos;
+    this.dataSource.paginator = this.pag;
+    this.displayedColumns = ['fechaact','nrodoc','ope','clienteNombre','observaciones','serial','salidas'];
+  })
+  this.sujetoSubscripcion = this.serviceItemDeposito.listenerProductoPeriodo2FechasIngresos().subscribe((datos)=>{
+    this.modulo ="ingreso";
+    this.dataSource.data = datos;
+    this.agregarDataParaMayorIngresos(datos);
+    this.dataSource.paginator = this.pag;
+    this.displayedColumns = ['fechaact','nrodoc','ope','proveedorNombre','observaciones','ingresos','serial'];
+  })
+  this.sujetoSubscripcion = this.serviceItemDeposito.listenerProductoPeriodo2FechasKardex().subscribe((datos)=>{
+    this.modulo ="kardex";
+    this.dataSource.data = datos;
+    this.dataSource.paginator = this.pag;
+    this.displayedColumns = ['codigo','fechaact','nrodoc','ope','observaciones','serial','invinicial','ingresos','salidas','saldo'];
+  })
+  this.sujetoSubscripcion = this.serviceItemDeposito.listeneritemProductoPeriodo2FechasIngresosProductos().subscribe((datos)=>{
+    this.modulo ="ingreso";
+    this.dataSource.data = datos;
+    this.agregarDataParaMayorIngresos(datos);
+    this.dataSource.paginator = this.pag;
+    this.displayedColumns = ['fechaact','nrodoc','ope','proveedorNombre','observaciones','ingresos','serial'];
+  })
+  this.sujetoSubscripcion = this.serviceItemDeposito.listeneritemProductoPeriodo2FechasSalidasProductos().subscribe((datos)=>{
+    this.modulo ="salida";
+    this.dataSource.data = datos;
+    this.agregarDataParaMayorSalidas(datos);
+    this.dataSource.paginator = this.pag;
+    this.displayedColumns = ['fechaact','nrodoc','ope','clienteNombre','observaciones','serial','salidas'];
+  })
+  this.sujetoSubscripcion = this.serviceItemDeposito.listeneritemProductoPeriodo2FechasKardexProductos().subscribe((datos)=>{
+    this.modulo ="kardex";
+    this.dataSource.data = datos;
+    this.agregarDataParaKardex(datos);
+    this.dataSource.paginator = this.pag;
+    this.displayedColumns = ['codigo','fechaact','nrodoc','ope','observaciones','serial','invinicial','ingresos','salidas','saldo'];
+  })
+  this.sujetoSubscripcion=this.serviceItemDeposito.listeneritemProductoPeriodo2FechasProductoPeriodo().subscribe((datos)=>{
+    this.modulo = "periodo";
+
+    this.dataSource.data = datos;
+    this.agregarDataPara2Fechas(datos);
+    this.dataSource.paginator = this.pag;
+    this.displayedColumns = ['codigo','nombre','unidad','invinicial','ingresos','salidas','saldo'];
 
   })
   /*  this.serviceItemDeposito.obtenerPorPeriodo("2012-07-07");
@@ -152,14 +206,60 @@ export class ItemDepositoComponent implements OnInit {
     if(this.sujetoSubscripcion!= undefined){
       this.sujetoSubscripcion.unsubscribe();
     }
+    if(this.sujetoSubscripcionGeneral!= undefined){
+      this.sujetoSubscripcionGeneral.unsubscribe();
+    }
+
   }
   ngAfterViewInit(): void {
     this.dataSource.sort = this.sort;
   }
   entre2fechas(){
-    var dialogRef = this.dialog.open(Entre2fechasDepositoComponent,{width:'700px',data:"kardex"})
+    var dialogRef = this.dialog.open(Entre2fechasDepositoComponent,{width:'700px',data:"entre2fechasProductoPeriodo"})
     dialogRef.afterClosed().subscribe((datos: string)=>{
 
+      this.valor=datos;
+    })
+  }
+  entre2fechasSalidas(){
+    var dialogRef = this.dialog.open(Entre2fechasDepositoComponent,{width:'700px',data:"entre2FechasSalidas"})
+    dialogRef.afterClosed().subscribe((datos: string)=>{
+      this.valor=datos;
+    })
+  }
+  entre2fechasIngresos(){
+    var dialogRef = this.dialog.open(Entre2fechasDepositoComponent,{width:'700px',data:"entre2FechasIngresos"})
+    dialogRef.afterClosed().subscribe((datos: string)=>{
+      this.valor=datos;
+    })
+  }
+  entre2fechasKardex(){
+    var dialogRef = this.dialog.open(Entre2fechasDepositoComponent,{width:'700px',data:"entre2FechasKardex"})
+    dialogRef.afterClosed().subscribe((datos: string)=>{
+      this.valor=datos;
+    })
+  }
+  entre2fechasPeriodosProductos(){
+    var dialogRef = this.dialog.open(Entre2fechasproductodepositoComponent,{width:'700px',data:"entre2FechasProductoPeriodo"})
+    dialogRef.afterClosed().subscribe((datos: string)=>{
+      this.valor=datos;
+    })
+  }
+  entre2fechasSalidasProductos(){
+    var dialogRef = this.dialog.open(Entre2fechasproductodepositoComponent,{width:'700px',data:"entre2FechasSalidasProductos"})
+    dialogRef.afterClosed().subscribe((datos: string)=>{
+      this.valor=datos;
+    })
+  }
+  entre2fechasIngresosProductos(){
+    var dialogRef = this.dialog.open(Entre2fechasproductodepositoComponent,{width:'700px',data:"entre2FechasIngresosProductos"})
+    dialogRef.afterClosed().subscribe((datos: string)=>{
+      this.valor=datos;
+    })
+  }
+  entre2fechasKardexProductos(){
+    var dialogRef = this.dialog.open(Entre2fechasproductodepositoComponent,{width:'700px',data:"entre2FechasKardexProductos"})
+    dialogRef.afterClosed().subscribe((datos: string)=>{
       this.valor=datos;
     })
   }
@@ -458,6 +558,7 @@ export class ItemDepositoComponent implements OnInit {
     this.actualizarSelector(nuevoValorDataSource)
     this.dataSource.data=nuevoValorDataSource;
   }
+
   cantidadClick(){
     var nuevoValorDataSource:ItemProductoModel[] = []
     this.dataSource.data.forEach(data=>{

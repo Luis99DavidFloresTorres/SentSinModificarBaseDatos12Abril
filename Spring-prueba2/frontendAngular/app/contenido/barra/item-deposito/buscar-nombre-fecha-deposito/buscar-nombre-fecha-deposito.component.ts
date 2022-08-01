@@ -1,7 +1,7 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 import { ProductoModel } from 'src/app/Models/producto.model';
 import { ServiceDeposito } from 'src/app/services/codificadores/deposito.service';
@@ -14,7 +14,7 @@ import { ServiceProducto } from 'src/app/services/producto.service';
   templateUrl: './buscar-nombre-fecha-deposito.component.html',
   styleUrls: ['./buscar-nombre-fecha-deposito.component.css']
 })
-export class BuscarNombreFechaDepositoComponent implements OnInit {
+export class BuscarNombreFechaDepositoComponent implements OnInit, OnDestroy{
   myControl = new FormControl();
   options: String[]=[];
   formG: FormGroup|any;
@@ -22,7 +22,17 @@ export class BuscarNombreFechaDepositoComponent implements OnInit {
   depositos:String[]=[];
   filteredOptions: Observable<String[]>|any;
   depositoElegido:String="";
+  depositoSubscription:Subscription|any;
+  productoSubscription:Subscription|any;
   constructor(private serviceItemDeposito: ServiceItemDeposito, private serviceProducto: ServiceProducto, @Inject(MAT_DIALOG_DATA) private data: String, private formBuild: FormBuilder, private matDialogRef: MatDialogRef<BuscarNombreFechaDepositoComponent>, private depositoService: ServiceDeposito){}
+  ngOnDestroy(): void {
+    if(this.depositoSubscription!=undefined){
+        this.depositoSubscription.unsubscribe();
+    }
+    if(this.productoSubscription!=undefined){
+      this.productoSubscription.unsubscribe();
+    }
+  }
   ngOnInit(): void {
     this.formG = this.formBuild.group({
       fechaBuscar:['',[Validators.required]],
@@ -30,11 +40,11 @@ export class BuscarNombreFechaDepositoComponent implements OnInit {
       deposito:['',[Validators.required]]
     })
     this.depositoService.obtenerNombresDepositos();
-    this.depositoService.listenerDatosNombresDepositos().subscribe(datos=>{
+    this.depositoSubscription = this.depositoService.listenerDatosNombresDepositos().subscribe(datos=>{
       this.depositos=datos;
     });
     this.serviceProducto.obtenerbyName();
-    this.serviceProducto.listenerDatosProductoNombre().subscribe(datos=>{
+    this.productoSubscription = this.serviceProducto.listenerDatosProductoNombre().subscribe(datos=>{
       this.options=datos;
       this.filteredOptions = this.formG.get("myControl").valueChanges.pipe(
         startWith(''),
